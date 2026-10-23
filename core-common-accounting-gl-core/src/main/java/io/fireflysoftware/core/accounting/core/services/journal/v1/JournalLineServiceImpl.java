@@ -14,83 +14,104 @@
  * limitations under the License.
  */
 
-
 package io.fireflysoftware.core.accounting.core.services.journal.v1;
 
-import org.fireflyframework.core.filters.FilterRequest;
-import org.fireflyframework.core.filters.FilterUtils;
-import org.fireflyframework.core.queries.PaginationResponse;
 import io.fireflysoftware.core.accounting.core.mappers.journal.v1.JournalLineMapper;
 import io.fireflysoftware.core.accounting.intefaces.dtos.journal.v1.JournalLineDTO;
 import io.fireflysoftware.core.accounting.models.entities.journal.v1.JournalLine;
 import io.fireflysoftware.core.accounting.models.repositories.journal.v1.JournalLineRepository;
+
+import org.fireflyframework.core.filters.FilterRequest;
+import org.fireflyframework.core.filters.FilterUtils;
+import org.fireflyframework.core.queries.PaginationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import reactor.core.publisher.Mono;
+
 import java.util.UUID;
 
 @Service
 @Transactional
 public class JournalLineServiceImpl implements JournalLineService {
 
-    @Autowired
-    private JournalLineRepository repository;
+    @Autowired private JournalLineRepository repository;
 
-    @Autowired
-    private JournalLineMapper mapper;
+    @Autowired private JournalLineMapper mapper;
+
+    @Autowired private LegacyJournalGuard guard;
 
     @Override
     public Mono<JournalLineDTO> create(UUID batchId, UUID entryId, JournalLineDTO dto) {
-        return Mono.just(dto)
-                .map(inputDto -> {
-                    inputDto.setEntryId(entryId);
-                    return mapper.toEntity(inputDto);
-                })
-                .flatMap(entity -> repository.save(entity))
-                .map(savedEntity -> mapper.toDTO(savedEntity));
+        return guard.entry(batchId, entryId, true)
+                .then(
+                        Mono.defer(
+                                () -> {
+                                    var entity = mapper.toEntity(dto);
+                                    entity.setId(null);
+                                    entity.setEntryId(entryId);
+                                    entity.setCreatedAt(java.time.LocalDateTime.now());
+                                    entity.setUpdatedAt(entity.getCreatedAt());
+                                    return repository.save(entity).map(mapper::toDTO);
+                                }))
+                .onErrorMap(LegacyJournalGuard::translate);
     }
 
     @Override
     public Mono<JournalLineDTO> getById(UUID batchId, UUID entryId, UUID lineId) {
-        return repository.findById(lineId)
+        return guard.entry(batchId, entryId, false)
+                .then(repository.findById(lineId))
                 .filter(entity -> entity.getEntryId().equals(entryId))
                 .map(mapper::toDTO)
-                .switchIfEmpty(Mono.error(new IllegalArgumentException("No journal line found with ID: " + lineId)));
+                .switchIfEmpty(Mono.error(LegacyJournalGuard.missing()));
     }
 
     @Override
-    public Mono<JournalLineDTO> update(UUID batchId, UUID entryId, UUID lineId, JournalLineDTO dto) {
-        return repository.findById(lineId)
+    public Mono<JournalLineDTO> update(
+            UUID batchId, UUID entryId, UUID lineId, JournalLineDTO dto) {
+        return guard.entry(batchId, entryId, true)
+                .then(repository.findById(lineId))
                 .filter(entity -> entity.getEntryId().equals(entryId))
-                .switchIfEmpty(Mono.error(new IllegalArgumentException("No journal line found with ID: " + lineId)))
-                .flatMap(existingEntity -> {
-                    existingEntity.setAccountId(dto.getAccountId());
-                    existingEntity.setAmount(dto.getAmount());
-                    existingEntity.setDrCr(dto.getDrCr());
-                    existingEntity.setMemo(dto.getMemo());
-                    existingEntity.setFxCurrency(dto.getFxCurrency());
-                    existingEntity.setFxRate(dto.getFxRate());
-                    existingEntity.setUpdatedAt(dto.getUpdatedAt());
-                    return repository.save(existingEntity);
-                })
-                .map(mapper::toDTO);
+                .switchIfEmpty(Mono.error(LegacyJournalGuard.missing()))
+                .flatMap(
+                        existingEntity -> {
+                            existingEntity.setAccountId(dto.getAccountId());
+                            existingEntity.setAmount(dto.getAmount());
+                            existingEntity.setDrCr(dto.getDrCr());
+                            existingEntity.setMemo(dto.getMemo());
+                            existingEntity.setFxCurrency(dto.getFxCurrency());
+                            existingEntity.setFxRate(dto.getFxRate());
+                            existingEntity.setUpdatedAt(java.time.LocalDateTime.now());
+                            return repository.save(existingEntity);
+                        })
+                .map(mapper::toDTO)
+                .onErrorMap(LegacyJournalGuard::translate);
     }
 
     @Override
     public Mono<Void> delete(UUID batchId, UUID entryId, UUID lineId) {
-        return repository.findById(lineId)
+        return guard.entry(batchId, entryId, true)
+                .then(repository.findById(lineId))
                 .filter(entity -> entity.getEntryId().equals(entryId))
-                .switchIfEmpty(Mono.error(new IllegalArgumentException("No journal line found with ID: " + lineId)))
-                .flatMap(repository::delete);
+                .switchIfEmpty(Mono.error(LegacyJournalGuard.missing()))
+                .flatMap(repository::delete)
+                .onErrorMap(LegacyJournalGuard::translate);
     }
 
     @Override
-    public Mono<PaginationResponse<JournalLineDTO>> search(UUID batchId, UUID entryId, FilterRequest<JournalLineDTO> filterRequest) {
-        filterRequest.getFilters().setEntryId(entryId);
-        return FilterUtils.createFilter(
-                JournalLine.class,
-                mapper::toDTO
-        ).filter(filterRequest);
+    public Mono<PaginationResponse<JournalLineDTO>> search(
+            UUID batchId, UUID entryId, FilterRequest<JournalLineDTO> filterRequest) {
+        return guard.entry(batchId, entryId, false)
+                .then(
+                        Mono.defer(
+                                () -> {
+                                    if (filterRequest.getFilters() == null)
+                                        filterRequest.setFilters(new JournalLineDTO());
+                                    filterRequest.getFilters().setEntryId(entryId);
+                                    return FilterUtils.createFilter(
+                                                    JournalLine.class, mapper::toDTO)
+                                            .filter(filterRequest);
+                                }));
     }
 }

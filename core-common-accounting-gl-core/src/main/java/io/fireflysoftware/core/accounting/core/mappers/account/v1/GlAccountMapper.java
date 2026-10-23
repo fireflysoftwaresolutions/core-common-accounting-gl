@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-
 package io.fireflysoftware.core.accounting.core.mappers.account.v1;
 
 import io.fireflysoftware.core.accounting.intefaces.dtos.account.v1.GlAccountDTO;
 import io.fireflysoftware.core.accounting.models.entities.account.v1.GlAccount;
+
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface GlAccountMapper {
-    GlAccountDTO toDTO (GlAccount entity);
-    GlAccount toEntity (GlAccountDTO dto);
+    @Mapping(target = "isLeaf", source = "leaf")
+    GlAccountDTO toDTO(GlAccount entity);
+
+    @Mapping(target = "isLeaf", source = "leaf")
+    GlAccount toEntity(GlAccountDTO dto);
 }

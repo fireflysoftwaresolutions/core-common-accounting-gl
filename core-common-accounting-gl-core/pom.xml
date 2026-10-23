@@ -39,6 +39,15 @@
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.fireflyframework</groupId>
+            <artifactId>fireflyframework-security-spi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.fireflysoftware</groupId>
+            <artifactId>core-common-reference-master-data-sdk</artifactId>
+        </dependency>
+
         <!-- Mapping -->
         <dependency>
             <groupId>org.mapstruct</groupId>

@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-
 package io.fireflysoftware.core.accounting.intefaces.dtos.account.v1;
 
-import org.fireflyframework.annotations.ValidCurrencyCode;
-import io.fireflysoftware.core.accounting.intefaces.enums.account.v1.GlAccountTypeEnum;
-import org.fireflyframework.utils.annotations.FilterableId;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import io.fireflysoftware.core.accounting.intefaces.enums.account.v1.GlAccountTypeEnum;
+
 import lombok.*;
+
+import org.fireflyframework.annotations.ValidCurrencyCode;
+import org.fireflyframework.utils.annotations.FilterableId;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -39,14 +41,14 @@ public class GlAccountDTO {
     private String name;
     private GlAccountTypeEnum type;
 
-    @FilterableId
-    private UUID parentId;
+    @FilterableId private UUID parentId;
 
+    @JsonProperty("leaf")
     private boolean isLeaf;
+
     private boolean active;
 
-    @ValidCurrencyCode
-    private String currency;
+    @ValidCurrencyCode private String currency;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
