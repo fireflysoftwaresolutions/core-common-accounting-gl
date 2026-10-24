@@ -1,5 +1,0 @@
-com/firefly/core/accounting/web/controllers/journal/v1/JournalEntryController.class
-com/firefly/core/accounting/web/GeneralLedgerApplication.class
-com/firefly/core/accounting/web/controllers/journal/v1/JournalBatchController.class
-com/firefly/core/accounting/web/controllers/journal/v1/JournalLineController.class
-com/firefly/core/accounting/web/controllers/account/v1/GlAccountController.class
