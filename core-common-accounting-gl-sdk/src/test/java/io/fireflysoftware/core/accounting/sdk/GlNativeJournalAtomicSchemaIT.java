@@ -19,8 +19,8 @@ import static io.fireflysoftware.core.accounting.sdk.GlNativeAccountingSchemaIT.
 
 import static org.assertj.core.api.Assertions.*;
 
-import io.fireflysoftware.core.accounting.core.services.posting.v1.*;
-import io.fireflysoftware.core.accounting.intefaces.dtos.posting.v1.*;
+import io.fireflysoftware.core.accounting.core.services.posting.*;
+import io.fireflysoftware.core.accounting.intefaces.dtos.posting.*;
 
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.*;

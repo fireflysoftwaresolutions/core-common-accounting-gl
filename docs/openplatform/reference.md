@@ -8,34 +8,34 @@ This reference is derived from checked-in source. It separates declared HTTP map
 
 | Mapping | Method | Controller | Kind |
 | --- | --- | --- | --- |
-| `GET /api/v1/gl-accounts/{id}` | `public Mono<ResponseEntity<GlAccountDTO>> getById(@PathVariable("id") UUID id)` | [GlAccountController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/account/v1/GlAccountController.java) | Local declaration |
-| `GET /api/v1/gl-accounts` | `public Mono<ResponseEntity<PaginationResponse<GlAccountDTO>>> search( @ParameterObject @ModelAttribute FilterRequest<GlAccountDTO> filterRequest)` | [GlAccountController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/account/v1/GlAccountController.java) | Local declaration |
-| `GET /api/v1/gl-accounts/{parentId}/children` | `public Mono<ResponseEntity<PaginationResponse<GlAccountDTO>>> findChildren( @PathVariable("parentId") UUID parentId, @ParameterObject @ModelAttribute FilterRequest<GlAccountDTO> filterRequest)` | [GlAccountController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/account/v1/GlAccountController.java) | Local declaration |
-| `POST /api/v1/gl-accounts` | `public Mono<ResponseEntity<GlAccountDTO>> create(@RequestBody GlAccountDTO dto)` | [GlAccountController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/account/v1/GlAccountController.java) | Local declaration |
-| `POST /api/v1/gl-accounts/{parentId}/children` | `public Mono<ResponseEntity<GlAccountDTO>> createChild(@PathVariable("parentId") UUID parentId, @RequestBody GlAccountDTO dto)` | [GlAccountController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/account/v1/GlAccountController.java) | Local declaration |
-| `PUT /api/v1/gl-accounts/{id}` | `public Mono<ResponseEntity<GlAccountDTO>> update(@PathVariable("id") UUID id, @RequestBody GlAccountDTO dto)` | [GlAccountController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/account/v1/GlAccountController.java) | Local declaration |
-| `DELETE /api/v1/gl-accounts/{id}` | `public Mono<ResponseEntity<Void>> delete(@PathVariable("id") UUID id)` | [GlAccountController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/account/v1/GlAccountController.java) | Local declaration |
-| `GET /api/v1/journal-batches/{id}` | `public Mono<ResponseEntity<JournalBatchDTO>> getById(@PathVariable("id") UUID id)` | [JournalBatchController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalBatchController.java) | Local declaration |
-| `GET /api/v1/journal-batches` | `public Mono<ResponseEntity<PaginationResponse<JournalBatchDTO>>> search( @ParameterObject @ModelAttribute FilterRequest<JournalBatchDTO> filterRequest)` | [JournalBatchController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalBatchController.java) | Local declaration |
-| `POST /api/v1/journal-batches` | `public Mono<ResponseEntity<JournalBatchDTO>> create(@RequestBody JournalBatchDTO dto)` | [JournalBatchController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalBatchController.java) | Local declaration |
-| `PUT /api/v1/journal-batches/{id}` | `public Mono<ResponseEntity<JournalBatchDTO>> update(@PathVariable("id") UUID id, @RequestBody JournalBatchDTO dto)` | [JournalBatchController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalBatchController.java) | Local declaration |
-| `DELETE /api/v1/journal-batches/{id}` | `public Mono<ResponseEntity<Void>> delete(@PathVariable("id") UUID id)` | [JournalBatchController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalBatchController.java) | Local declaration |
-| `GET /api/v1/journal-batches/{batchId}/entries/{entryId}` | `public Mono<ResponseEntity<JournalEntryDTO>> getById(@PathVariable("batchId") UUID batchId, @PathVariable("entryId") UUID entryId)` | [JournalEntryController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalEntryController.java) | Local declaration |
-| `GET /api/v1/journal-batches/{batchId}/entries` | `public Mono<ResponseEntity<PaginationResponse<JournalEntryDTO>>> search( @PathVariable("batchId") UUID batchId, @ParameterObject @ModelAttribute FilterRequest<JournalEntryDTO> filterRequest)` | [JournalEntryController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalEntryController.java) | Local declaration |
-| `POST /api/v1/journal-batches/{batchId}/entries` | `public Mono<ResponseEntity<JournalEntryDTO>> create(@PathVariable("batchId") UUID batchId, @RequestBody JournalEntryDTO dto)` | [JournalEntryController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalEntryController.java) | Local declaration |
-| `PUT /api/v1/journal-batches/{batchId}/entries/{entryId}` | `public Mono<ResponseEntity<JournalEntryDTO>> update(@PathVariable("batchId") UUID batchId, @PathVariable("entryId") UUID entryId, @RequestBody JournalEntryDTO dto)` | [JournalEntryController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalEntryController.java) | Local declaration |
-| `DELETE /api/v1/journal-batches/{batchId}/entries/{entryId}` | `public Mono<ResponseEntity<Void>> delete(@PathVariable("batchId") UUID batchId, @PathVariable("entryId") UUID entryId)` | [JournalEntryController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalEntryController.java) | Local declaration |
-| `GET /api/v1/journal-batches/{batchId}/entries/{entryId}/lines/{lineId}` | `public Mono<ResponseEntity<JournalLineDTO>> getById(@PathVariable("batchId") UUID batchId, @PathVariable("entryId") UUID entryId, @PathVariable("lineId") UUID lineId)` | [JournalLineController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalLineController.java) | Local declaration |
-| `GET /api/v1/journal-batches/{batchId}/entries/{entryId}/lines` | `public Mono<ResponseEntity<PaginationResponse<JournalLineDTO>>> search(@PathVariable("batchId") UUID batchId, @PathVariable("entryId") UUID entryId, @RequestBody FilterRequest<JournalLineDTO> filterRequest)` | [JournalLineController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalLineController.java) | Local declaration |
-| `POST /api/v1/journal-batches/{batchId}/entries/{entryId}/lines` | `public Mono<ResponseEntity<JournalLineDTO>> create(@PathVariable("batchId") UUID batchId, @PathVariable("entryId") UUID entryId, @RequestBody JournalLineDTO dto)` | [JournalLineController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalLineController.java) | Local declaration |
-| `PUT /api/v1/journal-batches/{batchId}/entries/{entryId}/lines/{lineId}` | `public Mono<ResponseEntity<JournalLineDTO>> update(@PathVariable("batchId") UUID batchId, @PathVariable("entryId") UUID entryId, @PathVariable("lineId") UUID lineId, @RequestBody JournalLineDTO dto)` | [JournalLineController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalLineController.java) | Local declaration |
-| `DELETE /api/v1/journal-batches/{batchId}/entries/{entryId}/lines/{lineId}` | `public Mono<ResponseEntity<Void>> delete(@PathVariable("batchId") UUID batchId, @PathVariable("entryId") UUID entryId, @PathVariable("lineId") UUID lineId)` | [JournalLineController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalLineController.java) | Local declaration |
+| `GET /api/v1/gl-accounts/{id}` | `public Mono<ResponseEntity<GlAccountDTO>> getById(@PathVariable("id") UUID id)` | [GlAccountController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/account/GlAccountController.java) | Local declaration |
+| `GET /api/v1/gl-accounts` | `public Mono<ResponseEntity<PaginationResponse<GlAccountDTO>>> search( @ParameterObject @ModelAttribute FilterRequest<GlAccountDTO> filterRequest)` | [GlAccountController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/account/GlAccountController.java) | Local declaration |
+| `GET /api/v1/gl-accounts/{parentId}/children` | `public Mono<ResponseEntity<PaginationResponse<GlAccountDTO>>> findChildren( @PathVariable("parentId") UUID parentId, @ParameterObject @ModelAttribute FilterRequest<GlAccountDTO> filterRequest)` | [GlAccountController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/account/GlAccountController.java) | Local declaration |
+| `POST /api/v1/gl-accounts` | `public Mono<ResponseEntity<GlAccountDTO>> create(@RequestBody GlAccountDTO dto)` | [GlAccountController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/account/GlAccountController.java) | Local declaration |
+| `POST /api/v1/gl-accounts/{parentId}/children` | `public Mono<ResponseEntity<GlAccountDTO>> createChild(@PathVariable("parentId") UUID parentId, @RequestBody GlAccountDTO dto)` | [GlAccountController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/account/GlAccountController.java) | Local declaration |
+| `PUT /api/v1/gl-accounts/{id}` | `public Mono<ResponseEntity<GlAccountDTO>> update(@PathVariable("id") UUID id, @RequestBody GlAccountDTO dto)` | [GlAccountController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/account/GlAccountController.java) | Local declaration |
+| `DELETE /api/v1/gl-accounts/{id}` | `public Mono<ResponseEntity<Void>> delete(@PathVariable("id") UUID id)` | [GlAccountController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/account/GlAccountController.java) | Local declaration |
+| `GET /api/v1/journal-batches/{id}` | `public Mono<ResponseEntity<JournalBatchDTO>> getById(@PathVariable("id") UUID id)` | [JournalBatchController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/JournalBatchController.java) | Local declaration |
+| `GET /api/v1/journal-batches` | `public Mono<ResponseEntity<PaginationResponse<JournalBatchDTO>>> search( @ParameterObject @ModelAttribute FilterRequest<JournalBatchDTO> filterRequest)` | [JournalBatchController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/JournalBatchController.java) | Local declaration |
+| `POST /api/v1/journal-batches` | `public Mono<ResponseEntity<JournalBatchDTO>> create(@RequestBody JournalBatchDTO dto)` | [JournalBatchController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/JournalBatchController.java) | Local declaration |
+| `PUT /api/v1/journal-batches/{id}` | `public Mono<ResponseEntity<JournalBatchDTO>> update(@PathVariable("id") UUID id, @RequestBody JournalBatchDTO dto)` | [JournalBatchController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/JournalBatchController.java) | Local declaration |
+| `DELETE /api/v1/journal-batches/{id}` | `public Mono<ResponseEntity<Void>> delete(@PathVariable("id") UUID id)` | [JournalBatchController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/JournalBatchController.java) | Local declaration |
+| `GET /api/v1/journal-batches/{batchId}/entries/{entryId}` | `public Mono<ResponseEntity<JournalEntryDTO>> getById(@PathVariable("batchId") UUID batchId, @PathVariable("entryId") UUID entryId)` | [JournalEntryController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/JournalEntryController.java) | Local declaration |
+| `GET /api/v1/journal-batches/{batchId}/entries` | `public Mono<ResponseEntity<PaginationResponse<JournalEntryDTO>>> search( @PathVariable("batchId") UUID batchId, @ParameterObject @ModelAttribute FilterRequest<JournalEntryDTO> filterRequest)` | [JournalEntryController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/JournalEntryController.java) | Local declaration |
+| `POST /api/v1/journal-batches/{batchId}/entries` | `public Mono<ResponseEntity<JournalEntryDTO>> create(@PathVariable("batchId") UUID batchId, @RequestBody JournalEntryDTO dto)` | [JournalEntryController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/JournalEntryController.java) | Local declaration |
+| `PUT /api/v1/journal-batches/{batchId}/entries/{entryId}` | `public Mono<ResponseEntity<JournalEntryDTO>> update(@PathVariable("batchId") UUID batchId, @PathVariable("entryId") UUID entryId, @RequestBody JournalEntryDTO dto)` | [JournalEntryController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/JournalEntryController.java) | Local declaration |
+| `DELETE /api/v1/journal-batches/{batchId}/entries/{entryId}` | `public Mono<ResponseEntity<Void>> delete(@PathVariable("batchId") UUID batchId, @PathVariable("entryId") UUID entryId)` | [JournalEntryController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/JournalEntryController.java) | Local declaration |
+| `GET /api/v1/journal-batches/{batchId}/entries/{entryId}/lines/{lineId}` | `public Mono<ResponseEntity<JournalLineDTO>> getById(@PathVariable("batchId") UUID batchId, @PathVariable("entryId") UUID entryId, @PathVariable("lineId") UUID lineId)` | [JournalLineController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/JournalLineController.java) | Local declaration |
+| `GET /api/v1/journal-batches/{batchId}/entries/{entryId}/lines` | `public Mono<ResponseEntity<PaginationResponse<JournalLineDTO>>> search(@PathVariable("batchId") UUID batchId, @PathVariable("entryId") UUID entryId, @RequestBody FilterRequest<JournalLineDTO> filterRequest)` | [JournalLineController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/JournalLineController.java) | Local declaration |
+| `POST /api/v1/journal-batches/{batchId}/entries/{entryId}/lines` | `public Mono<ResponseEntity<JournalLineDTO>> create(@PathVariable("batchId") UUID batchId, @PathVariable("entryId") UUID entryId, @RequestBody JournalLineDTO dto)` | [JournalLineController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/JournalLineController.java) | Local declaration |
+| `PUT /api/v1/journal-batches/{batchId}/entries/{entryId}/lines/{lineId}` | `public Mono<ResponseEntity<JournalLineDTO>> update(@PathVariable("batchId") UUID batchId, @PathVariable("entryId") UUID entryId, @PathVariable("lineId") UUID lineId, @RequestBody JournalLineDTO dto)` | [JournalLineController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/JournalLineController.java) | Local declaration |
+| `DELETE /api/v1/journal-batches/{batchId}/entries/{entryId}/lines/{lineId}` | `public Mono<ResponseEntity<Void>> delete(@PathVariable("batchId") UUID batchId, @PathVariable("entryId") UUID entryId, @PathVariable("lineId") UUID lineId)` | [JournalLineController](../../core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/JournalLineController.java) | Local declaration |
 
 ## Data contracts
 
 ### GlAccountDTO
 
-[GlAccountDTO](../../core-common-accounting-gl-interfaces/src/main/java/io/fireflysoftware/core/accounting/intefaces/dtos/account/v1/GlAccountDTO.java) · DTO / record / model
+[GlAccountDTO](../../core-common-accounting-gl-interfaces/src/main/java/io/fireflysoftware/core/accounting/intefaces/dtos/account/GlAccountDTO.java) · DTO / record / model
 
 | Field | Java type | Validation annotations |
 | --- | --- | --- |
@@ -52,7 +52,7 @@ This reference is derived from checked-in source. It separates declared HTTP map
 
 ### JournalBatchDTO
 
-[JournalBatchDTO](../../core-common-accounting-gl-interfaces/src/main/java/io/fireflysoftware/core/accounting/intefaces/dtos/journal/v1/JournalBatchDTO.java) · DTO / record / model
+[JournalBatchDTO](../../core-common-accounting-gl-interfaces/src/main/java/io/fireflysoftware/core/accounting/intefaces/dtos/journal/JournalBatchDTO.java) · DTO / record / model
 
 | Field | Java type | Validation annotations |
 | --- | --- | --- |
@@ -66,7 +66,7 @@ This reference is derived from checked-in source. It separates declared HTTP map
 
 ### JournalEntryDTO
 
-[JournalEntryDTO](../../core-common-accounting-gl-interfaces/src/main/java/io/fireflysoftware/core/accounting/intefaces/dtos/journal/v1/JournalEntryDTO.java) · DTO / record / model
+[JournalEntryDTO](../../core-common-accounting-gl-interfaces/src/main/java/io/fireflysoftware/core/accounting/intefaces/dtos/journal/JournalEntryDTO.java) · DTO / record / model
 
 | Field | Java type | Validation annotations |
 | --- | --- | --- |
@@ -84,7 +84,7 @@ This reference is derived from checked-in source. It separates declared HTTP map
 
 ### JournalLineDTO
 
-[JournalLineDTO](../../core-common-accounting-gl-interfaces/src/main/java/io/fireflysoftware/core/accounting/intefaces/dtos/journal/v1/JournalLineDTO.java) · DTO / record / model
+[JournalLineDTO](../../core-common-accounting-gl-interfaces/src/main/java/io/fireflysoftware/core/accounting/intefaces/dtos/journal/JournalLineDTO.java) · DTO / record / model
 
 | Field | Java type | Validation annotations |
 | --- | --- | --- |
@@ -102,7 +102,7 @@ This reference is derived from checked-in source. It separates declared HTTP map
 
 ### GlAccount
 
-[GlAccount](../../core-common-accounting-gl-models/src/main/java/io/fireflysoftware/core/accounting/models/entities/account/v1/GlAccount.java) · Persisted entity
+[GlAccount](../../core-common-accounting-gl-models/src/main/java/io/fireflysoftware/core/accounting/models/entities/account/GlAccount.java) · Persisted entity
 
 | Field | Java type | Validation annotations |
 | --- | --- | --- |
@@ -119,7 +119,7 @@ This reference is derived from checked-in source. It separates declared HTTP map
 
 ### JournalBatch
 
-[JournalBatch](../../core-common-accounting-gl-models/src/main/java/io/fireflysoftware/core/accounting/models/entities/journal/v1/JournalBatch.java) · Persisted entity
+[JournalBatch](../../core-common-accounting-gl-models/src/main/java/io/fireflysoftware/core/accounting/models/entities/journal/JournalBatch.java) · Persisted entity
 
 | Field | Java type | Validation annotations |
 | --- | --- | --- |
@@ -133,7 +133,7 @@ This reference is derived from checked-in source. It separates declared HTTP map
 
 ### JournalEntry
 
-[JournalEntry](../../core-common-accounting-gl-models/src/main/java/io/fireflysoftware/core/accounting/models/entities/journal/v1/JournalEntry.java) · Persisted entity
+[JournalEntry](../../core-common-accounting-gl-models/src/main/java/io/fireflysoftware/core/accounting/models/entities/journal/JournalEntry.java) · Persisted entity
 
 | Field | Java type | Validation annotations |
 | --- | --- | --- |
@@ -151,7 +151,7 @@ This reference is derived from checked-in source. It separates declared HTTP map
 
 ### JournalLine
 
-[JournalLine](../../core-common-accounting-gl-models/src/main/java/io/fireflysoftware/core/accounting/models/entities/journal/v1/JournalLine.java) · Persisted entity
+[JournalLine](../../core-common-accounting-gl-models/src/main/java/io/fireflysoftware/core/accounting/models/entities/journal/JournalLine.java) · Persisted entity
 
 | Field | Java type | Validation annotations |
 | --- | --- | --- |
@@ -171,7 +171,7 @@ This reference is derived from checked-in source. It separates declared HTTP map
 
 ### GlAccountService
 
-[GlAccountService](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/account/v1/GlAccountService.java)
+[GlAccountService](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/account/GlAccountService.java)
 
 ```java
 Mono<GlAccountDTO> create(GlAccountDTO dto);
@@ -185,7 +185,7 @@ Mono<GlAccountDTO> createChild(UUID parentId, GlAccountDTO dto);
 
 ### JournalBatchService
 
-[JournalBatchService](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalBatchService.java)
+[JournalBatchService](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/JournalBatchService.java)
 
 ```java
 Mono<JournalBatchDTO> create(JournalBatchDTO dto);
@@ -197,7 +197,7 @@ Mono<PaginationResponse<JournalBatchDTO>> search(FilterRequest<JournalBatchDTO> 
 
 ### JournalEntryService
 
-[JournalEntryService](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalEntryService.java)
+[JournalEntryService](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/JournalEntryService.java)
 
 ```java
 Mono<JournalEntryDTO> create(UUID batchId, JournalEntryDTO dto);
@@ -209,7 +209,7 @@ Mono<PaginationResponse<JournalEntryDTO>> search(UUID batchId, FilterRequest<Jou
 
 ### JournalLineService
 
-[JournalLineService](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalLineService.java)
+[JournalLineService](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/JournalLineService.java)
 
 ```java
 Mono<JournalLineDTO> create(UUID batchId, UUID entryId, JournalLineDTO dto);
@@ -243,18 +243,18 @@ Values below come from source placeholders. Plain YAML values and configuration-
 
 | Declaration or failure site | Source |
 | --- | --- |
-| `new IllegalArgumentException("No account found with ID: " + id)));` | [GlAccountServiceImpl](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/account/v1/GlAccountServiceImpl.java) |
-| `new IllegalArgumentException("No account found with ID: " + id)))` | [GlAccountServiceImpl](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/account/v1/GlAccountServiceImpl.java) |
-| `new IllegalArgumentException("No account found with ID: " + id)))` | [GlAccountServiceImpl](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/account/v1/GlAccountServiceImpl.java) |
-| `new IllegalArgumentException("No journal batch found with ID: " + id)));` | [JournalBatchServiceImpl](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalBatchServiceImpl.java) |
-| `new IllegalArgumentException("No journal batch found with ID: " + id)));` | [JournalBatchServiceImpl](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalBatchServiceImpl.java) |
-| `new IllegalArgumentException("No journal batch found with ID: " + id)))` | [JournalBatchServiceImpl](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalBatchServiceImpl.java) |
-| `new IllegalArgumentException("No journal entry found with ID: " + entryId)));` | [JournalEntryServiceImpl](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalEntryServiceImpl.java) |
-| `new IllegalArgumentException("No journal entry found with ID: " + entryId)));` | [JournalEntryServiceImpl](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalEntryServiceImpl.java) |
-| `new IllegalArgumentException("No journal entry found with ID: " + entryId)))` | [JournalEntryServiceImpl](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalEntryServiceImpl.java) |
-| `new IllegalArgumentException("No journal line found with ID: " + lineId)));` | [JournalLineServiceImpl](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalLineServiceImpl.java) |
-| `new IllegalArgumentException("No journal line found with ID: " + lineId)))` | [JournalLineServiceImpl](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalLineServiceImpl.java) |
-| `new IllegalArgumentException("No journal line found with ID: " + lineId)))` | [JournalLineServiceImpl](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalLineServiceImpl.java) |
+| `new IllegalArgumentException("No account found with ID: " + id)));` | [GlAccountServiceImpl](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/account/impl/GlAccountServiceImpl.java) |
+| `new IllegalArgumentException("No account found with ID: " + id)))` | [GlAccountServiceImpl](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/account/impl/GlAccountServiceImpl.java) |
+| `new IllegalArgumentException("No account found with ID: " + id)))` | [GlAccountServiceImpl](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/account/impl/GlAccountServiceImpl.java) |
+| `new IllegalArgumentException("No journal batch found with ID: " + id)));` | [JournalBatchServiceImpl](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/impl/JournalBatchServiceImpl.java) |
+| `new IllegalArgumentException("No journal batch found with ID: " + id)));` | [JournalBatchServiceImpl](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/impl/JournalBatchServiceImpl.java) |
+| `new IllegalArgumentException("No journal batch found with ID: " + id)))` | [JournalBatchServiceImpl](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/impl/JournalBatchServiceImpl.java) |
+| `new IllegalArgumentException("No journal entry found with ID: " + entryId)));` | [JournalEntryServiceImpl](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/impl/JournalEntryServiceImpl.java) |
+| `new IllegalArgumentException("No journal entry found with ID: " + entryId)));` | [JournalEntryServiceImpl](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/impl/JournalEntryServiceImpl.java) |
+| `new IllegalArgumentException("No journal entry found with ID: " + entryId)))` | [JournalEntryServiceImpl](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/impl/JournalEntryServiceImpl.java) |
+| `new IllegalArgumentException("No journal line found with ID: " + lineId)));` | [JournalLineServiceImpl](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/impl/JournalLineServiceImpl.java) |
+| `new IllegalArgumentException("No journal line found with ID: " + lineId)))` | [JournalLineServiceImpl](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/impl/JournalLineServiceImpl.java) |
+| `new IllegalArgumentException("No journal line found with ID: " + lineId)))` | [JournalLineServiceImpl](../../core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/impl/JournalLineServiceImpl.java) |
 
 ## Build and dependencies
 

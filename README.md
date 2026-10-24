@@ -27,10 +27,10 @@ A journal CRUD API is not a general accounting close, a reconciliation engine, o
 
 | Entry point | Declared operations |
 | --- | --- |
-| [GlAccountController](core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/account/v1/GlAccountController.java) | `GET /api/v1/gl-accounts/{id}`; `GET /api/v1/gl-accounts`; `GET /api/v1/gl-accounts/{parentId}/children`; 4 more declarations |
-| [JournalBatchController](core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalBatchController.java) | `GET /api/v1/journal-batches/{id}`; `GET /api/v1/journal-batches`; `POST /api/v1/journal-batches`; 2 more declarations |
-| [JournalEntryController](core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalEntryController.java) | `GET /api/v1/journal-batches/{batchId}/entries/{entryId}`; `GET /api/v1/journal-batches/{batchId}/entries`; `POST /api/v1/journal-batches/{batchId}/entries`; 2 more declarations |
-| [JournalLineController](core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalLineController.java) | `GET /api/v1/journal-batches/{batchId}/entries/{entryId}/lines/{lineId}`; `GET /api/v1/journal-batches/{batchId}/entries/{entryId}/lines`; `POST /api/v1/journal-batches/{batchId}/entries/{entryId}/lines`; 2 more declarations |
+| [GlAccountController](core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/account/GlAccountController.java) | `GET /api/v1/gl-accounts/{id}`; `GET /api/v1/gl-accounts`; `GET /api/v1/gl-accounts/{parentId}/children`; 4 more declarations |
+| [JournalBatchController](core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/JournalBatchController.java) | `GET /api/v1/journal-batches/{id}`; `GET /api/v1/journal-batches`; `POST /api/v1/journal-batches`; 2 more declarations |
+| [JournalEntryController](core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/JournalEntryController.java) | `GET /api/v1/journal-batches/{batchId}/entries/{entryId}`; `GET /api/v1/journal-batches/{batchId}/entries`; `POST /api/v1/journal-batches/{batchId}/entries`; 2 more declarations |
+| [JournalLineController](core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/JournalLineController.java) | `GET /api/v1/journal-batches/{batchId}/entries/{entryId}/lines/{lineId}`; `GET /api/v1/journal-batches/{batchId}/entries/{entryId}/lines`; `POST /api/v1/journal-batches/{batchId}/entries/{entryId}/lines`; 2 more declarations |
 
 The complete [operation reference](docs/openplatform/reference.md#http-operations) lists each mapping and its owning method. These are source declarations; conditional beans, inherited controllers, security filters, and deployment routing can change the effective runtime API.
 
@@ -61,7 +61,7 @@ Content-Type: application/json
 
 **Execution evidence.** Source checked against the local HTTP declaration and checked-in OpenAPI request schema. This documentation worker has not submitted this payload to a running service; full owner fixtures, deployment authentication, and live-provider acceptance are unverified.
 
-Source of this example: [GlAccountController](core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/account/v1/GlAccountController.java), [openapi](core-common-accounting-gl-sdk/src/main/resources/openapi.yml), [GlAccountDTO](core-common-accounting-gl-interfaces/src/main/java/io/fireflysoftware/core/accounting/intefaces/dtos/account/v1/GlAccountDTO.java), [GlAccountService](core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/account/v1/GlAccountService.java), [GlAccountServiceImpl](core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/account/v1/GlAccountServiceImpl.java).
+Source of this example: [GlAccountController](core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/account/GlAccountController.java), [openapi](core-common-accounting-gl-sdk/src/main/resources/openapi.yml), [GlAccountDTO](core-common-accounting-gl-interfaces/src/main/java/io/fireflysoftware/core/accounting/intefaces/dtos/account/GlAccountDTO.java), [GlAccountService](core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/account/GlAccountService.java), [GlAccountServiceImpl](core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/account/impl/GlAccountServiceImpl.java).
 
 ## Architecture and repository layout
 
@@ -88,10 +88,10 @@ Use the request and response types declared by each operation. Preserve stable r
 
 | Data type | Declared fields (selection) |
 | --- | --- |
-| [GlAccount](core-common-accounting-gl-models/src/main/java/io/fireflysoftware/core/accounting/models/entities/account/v1/GlAccount.java) | `id`, `code`, `name`, `type`, `parentId`, `isLeaf`, `active` |
-| [JournalBatch](core-common-accounting-gl-models/src/main/java/io/fireflysoftware/core/accounting/models/entities/journal/v1/JournalBatch.java) | `id`, `reference`, `status`, `batchDate`, `remarks`, `createdAt`, `updatedAt` |
-| [JournalEntry](core-common-accounting-gl-models/src/main/java/io/fireflysoftware/core/accounting/models/entities/journal/v1/JournalEntry.java) | `id`, `batchId`, `transactionId`, `sourceModule`, `totalAmount`, `description`, `entryDate` |
-| [JournalLine](core-common-accounting-gl-models/src/main/java/io/fireflysoftware/core/accounting/models/entities/journal/v1/JournalLine.java) | `id`, `entryId`, `accountId`, `amount`, `drCr`, `memo`, `fxCurrency` |
+| [GlAccount](core-common-accounting-gl-models/src/main/java/io/fireflysoftware/core/accounting/models/entities/account/GlAccount.java) | `id`, `code`, `name`, `type`, `parentId`, `isLeaf`, `active` |
+| [JournalBatch](core-common-accounting-gl-models/src/main/java/io/fireflysoftware/core/accounting/models/entities/journal/JournalBatch.java) | `id`, `reference`, `status`, `batchDate`, `remarks`, `createdAt`, `updatedAt` |
+| [JournalEntry](core-common-accounting-gl-models/src/main/java/io/fireflysoftware/core/accounting/models/entities/journal/JournalEntry.java) | `id`, `batchId`, `transactionId`, `sourceModule`, `totalAmount`, `description`, `entryDate` |
+| [JournalLine](core-common-accounting-gl-models/src/main/java/io/fireflysoftware/core/accounting/models/entities/journal/JournalLine.java) | `id`, `entryId`, `accountId`, `amount`, `drCr`, `memo`, `fxCurrency` |
 
 The [data contract reference](docs/openplatform/reference.md#data-contracts) indexes **8 DTO, record, or entity declarations** and their fields. Read DTO validation annotations together with service logic and migrations; a field's presence does not establish that every endpoint accepts it.
 
@@ -101,12 +101,12 @@ Examples of locally enforced failure or access behavior:
 
 | Declared check or failure | Implementation |
 | --- | --- |
-| `new IllegalArgumentException("No account found with ID: " + id)));` | [GlAccountServiceImpl](core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/account/v1/GlAccountServiceImpl.java) |
-| `new IllegalArgumentException("No account found with ID: " + id)))` | [GlAccountServiceImpl](core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/account/v1/GlAccountServiceImpl.java) |
-| `new IllegalArgumentException("No journal batch found with ID: " + id)));` | [JournalBatchServiceImpl](core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalBatchServiceImpl.java) |
-| `new IllegalArgumentException("No journal batch found with ID: " + id)))` | [JournalBatchServiceImpl](core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalBatchServiceImpl.java) |
-| `new IllegalArgumentException("No journal entry found with ID: " + entryId)));` | [JournalEntryServiceImpl](core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalEntryServiceImpl.java) |
-| `new IllegalArgumentException("No journal entry found with ID: " + entryId)))` | [JournalEntryServiceImpl](core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalEntryServiceImpl.java) |
+| `new IllegalArgumentException("No account found with ID: " + id)));` | [GlAccountServiceImpl](core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/account/impl/GlAccountServiceImpl.java) |
+| `new IllegalArgumentException("No account found with ID: " + id)))` | [GlAccountServiceImpl](core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/account/impl/GlAccountServiceImpl.java) |
+| `new IllegalArgumentException("No journal batch found with ID: " + id)));` | [JournalBatchServiceImpl](core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/impl/JournalBatchServiceImpl.java) |
+| `new IllegalArgumentException("No journal batch found with ID: " + id)))` | [JournalBatchServiceImpl](core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/impl/JournalBatchServiceImpl.java) |
+| `new IllegalArgumentException("No journal entry found with ID: " + entryId)));` | [JournalEntryServiceImpl](core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/impl/JournalEntryServiceImpl.java) |
+| `new IllegalArgumentException("No journal entry found with ID: " + entryId)))` | [JournalEntryServiceImpl](core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/impl/JournalEntryServiceImpl.java) |
 
 The [security and failure reference](docs/openplatform/reference.md#security-and-failure-evidence) links local authorization annotations, status mappings, and exception sites. Framework or gateway policy is additional to this local inventory; verify the deployed filter chain and caller entitlements before integration.
 

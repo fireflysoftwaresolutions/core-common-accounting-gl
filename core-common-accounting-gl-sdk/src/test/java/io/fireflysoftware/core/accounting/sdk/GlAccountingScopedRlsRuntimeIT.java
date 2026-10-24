@@ -21,8 +21,8 @@ import static io.fireflysoftware.core.accounting.sdk.GlNativeJournalAtomicSchema
 
 import static org.assertj.core.api.Assertions.*;
 
-import io.fireflysoftware.core.accounting.core.services.posting.v1.*;
-import io.fireflysoftware.core.accounting.intefaces.dtos.posting.v1.*;
+import io.fireflysoftware.core.accounting.core.services.posting.*;
+import io.fireflysoftware.core.accounting.intefaces.dtos.posting.*;
 import io.r2dbc.pool.*;
 import io.r2dbc.postgresql.*;
 

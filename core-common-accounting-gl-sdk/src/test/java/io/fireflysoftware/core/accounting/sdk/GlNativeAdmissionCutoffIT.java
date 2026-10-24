@@ -22,7 +22,7 @@ import static io.fireflysoftware.core.accounting.sdk.GlNativeJournalAtomicSchema
 
 import static org.assertj.core.api.Assertions.*;
 
-import io.fireflysoftware.core.accounting.core.services.posting.v1.GlAccountingAuthority;
+import io.fireflysoftware.core.accounting.core.services.posting.GlAccountingAuthority;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;

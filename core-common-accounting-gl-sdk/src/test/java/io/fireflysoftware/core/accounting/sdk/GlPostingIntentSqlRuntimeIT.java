@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.node.*;
 
-import io.fireflysoftware.core.accounting.core.services.posting.v1.*;
+import io.fireflysoftware.core.accounting.core.services.posting.*;
 
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.*;
