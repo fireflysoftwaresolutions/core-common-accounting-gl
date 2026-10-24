@@ -77,6 +77,20 @@ SdkAccountingCurrencyObservationAdapter uses the actual generated CurrencyExecut
 
 HTTPS is required by default. The explicit property firefly.accounting.currency-observation.allow-loopback-http=true permits only127.0.0.1 or ::1 for a private sandbox fixture. It does not authorize arbitrary HTTP destinations or create trusted production credentials.
 
+## Legacy draft read projections
+
+Legacy draft guards read mapped Spring Data repositories. V9 supplies three invoker-security views for batch state, an entry's actual batch, and historical account usage. The joins remain in PostgreSQL; application services do not load unbounded ID lists or issue ad hoc business SQL. Repository interfaces expose reads only. Existing database triggers continue to enforce write integrity.
+
+Apply V9 before deploying this application source. A separately managed runtime role needs SELECT on these views and the underlying tables it was already authorized to read. V9 creates no runtime grants and does not bypass existing base-table privileges or RLS. For an existing authorized role, an administrator can grant the additional view reads explicitly:
+
+```sql
+GRANT SELECT ON public.gl_legacy_journal_batch_state,
+                public.gl_legacy_journal_entry_state,
+                public.gl_legacy_account_usage TO application_role;
+```
+
+Replace `application_role` with the actual restricted runtime role. This grant does not authorize native financial operations or grant underlying table access. Deploy the migration and role configuration together; do not run the runtime application as the migration owner to avoid configuring permissions.
+
 ## Legacy compatibility and migration
 
 Existing OPEN batch/entry/line drafting remains available. New legacy POSTED/REVERSED batches, posted entries, and generic financial mutation/deletion are refused. Parent identities are checked across batch, entry, and line routes. Historical posted data and enrolled source-chart identities are fenced against mutable CRUD. Generic source-chart reads hide enrolled metadata while preserving unused legacy drafts.

@@ -197,6 +197,56 @@ class GlLegacySafetyRuntimeIT {
     }
 
     @Test
+    void mappedGuardProjectionsRetainHistoricalFactsWithInvokerPrivileges() throws Exception {
+        try (var connection = DriverManager.getConnection(
+                postgres.getJdbcUrl(), "gl_legacy_app", "synthetic-only")) {
+            try (var query = connection.prepareStatement(
+                    "SELECT status, posted FROM public.gl_legacy_journal_batch_state WHERE id=?")) {
+                query.setObject(1, HISTORICAL_BATCH);
+                try (var rows = query.executeQuery()) {
+                    assertThat(rows.next()).isTrue();
+                    assertThat(rows.getString("status")).isEqualTo("POSTED");
+                    assertThat(rows.getBoolean("posted")).isTrue();
+                    assertThat(rows.next()).isFalse();
+                }
+            }
+            try (var query = connection.prepareStatement(
+                    "SELECT batch_id, status, posted FROM public.gl_legacy_journal_entry_state WHERE id=?")) {
+                query.setObject(1, HISTORICAL_ENTRY);
+                try (var rows = query.executeQuery()) {
+                    assertThat(rows.next()).isTrue();
+                    assertThat(rows.getObject("batch_id", UUID.class)).isEqualTo(HISTORICAL_BATCH);
+                    assertThat(rows.getString("status")).isEqualTo("POSTED");
+                    assertThat(rows.getBoolean("posted")).isTrue();
+                }
+            }
+            try (var query = connection.prepareStatement(
+                    "SELECT historical FROM public.gl_legacy_account_usage WHERE id=?")) {
+                query.setObject(1, ACCOUNT);
+                try (var rows = query.executeQuery()) {
+                    assertThat(rows.next()).isTrue();
+                    assertThat(rows.getBoolean("historical")).isTrue();
+                }
+            }
+            try (var query = connection.createStatement(); var rows = query.executeQuery(
+                    "SELECT reloptions FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace "
+                    + "WHERE n.nspname='public' AND c.relname IN ('gl_legacy_journal_batch_state',"
+                    + "'gl_legacy_journal_entry_state','gl_legacy_account_usage') ORDER BY c.relname")) {
+                int views = 0;
+                while (rows.next()) {
+                    assertThat(rows.getString(1)).contains("security_invoker=true");
+                    views++;
+                }
+                assertThat(views).isEqualTo(3);
+            }
+        }
+        var historical = new JournalLinesApi(client())
+                .getById2(HISTORICAL_BATCH, HISTORICAL_ENTRY, HISTORICAL_LINE, null).block(WAIT);
+        assertThat(historical).isNotNull();
+        assertThat(historical.getId()).isEqualTo(HISTORICAL_LINE);
+    }
+
+    @Test
     void legacyOpenDraftCannotBecomePostedWithAnIncompleteJournal() throws Exception {
         var body =
                 new JournalBatchDTO()

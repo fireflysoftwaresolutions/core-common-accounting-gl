@@ -19,89 +19,18 @@ package io.fireflysoftware.core.accounting.core.services.journal;
 import io.r2dbc.spi.R2dbcException;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.r2dbc.core.DatabaseClient;
-import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
-@Component
-public final class LegacyJournalGuard {
-    private final DatabaseClient database;
+public interface LegacyJournalGuard {
+    Mono<Void> batch(UUID batchId, boolean writable);
 
-    public LegacyJournalGuard(DatabaseClient database) {
-        this.database = database;
-    }
+    Mono<Void> entry(UUID batchId, UUID entryId, boolean writable);
 
-    public Mono<Void> batch(UUID batchId, boolean writable) {
-        return database.sql(
-                        """
-                        SELECT b.status::text status,
-                               EXISTS (SELECT 1 FROM journal_entry e WHERE e.batch_id=b.id AND e.posted) posted
-                        FROM journal_batch b WHERE b.id=:id
-                        """)
-                .bind("id", batchId)
-                .map(
-                        (row, metadata) -> {
-                            if (writable
-                                    && (!"OPEN".equals(row.get("status", String.class))
-                                            || Boolean.TRUE.equals(
-                                                    row.get("posted", Boolean.class)))) {
-                                throw conflict();
-                            }
-                            return true;
-                        })
-                .one()
-                .switchIfEmpty(Mono.error(missing()))
-                .then();
-    }
-
-    public Mono<Void> entry(UUID batchId, UUID entryId, boolean writable) {
-        return database.sql(
-                        """
-                        SELECT b.status::text status,e.posted
-                        FROM journal_entry e JOIN journal_batch b ON b.id=e.batch_id
-                        WHERE e.id=:entry AND b.id=:batch
-                        """)
-                .bind("entry", entryId)
-                .bind("batch", batchId)
-                .map(
-                        (row, metadata) -> {
-                            if (writable
-                                    && (!"OPEN".equals(row.get("status", String.class))
-                                            || Boolean.TRUE.equals(
-                                                    row.get("posted", Boolean.class)))) {
-                                throw conflict();
-                            }
-                            return true;
-                        })
-                .one()
-                .switchIfEmpty(Mono.error(missing()))
-                .then();
-    }
-
-    public Mono<Void> account(UUID accountId) {
-        return database.sql(
-                        """
-                        SELECT EXISTS (
-                            SELECT 1 FROM journal_line l JOIN journal_entry e ON e.id=l.entry_id
-                            JOIN journal_batch b ON b.id=e.batch_id
-                            WHERE l.account_id=a.id AND (e.posted OR b.status<>'OPEN')
-                        ) historical FROM gl_account a WHERE a.id=:id
-                        """)
-                .bind("id", accountId)
-                .map(
-                        (row, metadata) -> {
-                            if (Boolean.TRUE.equals(row.get("historical", Boolean.class)))
-                                throw conflict();
-                            return true;
-                        })
-                .one()
-                .switchIfEmpty(Mono.error(missing()))
-                .then();
-    }
+    Mono<Void> account(UUID accountId);
 
     public static ResponseStatusException missing() {
         return new ResponseStatusException(HttpStatus.NOT_FOUND, "Journal resource not found");
