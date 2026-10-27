@@ -40,8 +40,18 @@ class GlBankOwnerProductionSecurityTest {
     static final String RS = "org.fireflyframework.security.rs.ResourceServerAutoConfiguration";
     static final String OAUTH = "org.fireflyframework.security.client.OAuth2ClientAutoConfiguration";
     static final String NATIVE = "org.springframework.boot.security.oauth2.client.autoconfigure.reactive.ReactiveOAuth2ClientAutoConfiguration";
-    static final Path ROOT = Path.of(System.getProperty("source.root"));
     static final String WEB = "core-common-accounting-gl-web";
+    static final Path ROOT = projectSourceRoot();
+
+    private static Path projectSourceRoot() {
+        String configured = System.getProperty("source.root");
+        if (configured != null) return Path.of(configured).toAbsolutePath().normalize();
+        Path base = Path.of(System.getProperty("basedir", ".")).toAbsolutePath().normalize();
+        if (java.nio.file.Files.isDirectory(base.resolve(WEB))) return base;
+        Path parent = base.getParent();
+        if (parent != null && java.nio.file.Files.isDirectory(parent.resolve(WEB))) return parent;
+        throw new IllegalStateException("GL project source directory could not be located");
+    }
 
     static Class<?> required(String name) {
         try { return Class.forName(name); }
