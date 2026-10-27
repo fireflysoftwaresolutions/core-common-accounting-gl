@@ -29,6 +29,11 @@ spring:
     virtual:
       enabled: true
 
+firefly:
+  security:
+    resource-server:
+      strict-policy: true
+
 server:
   address: ${SERVER_ADDRESS:localhost}
   port: ${SERVER_PORT:8080}
