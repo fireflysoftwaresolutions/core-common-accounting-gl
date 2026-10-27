@@ -27,6 +27,12 @@
             <artifactId>core-common-accounting-gl-models</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>io.fireflysoftware</groupId>
+            <artifactId>core-banking-ledger-interfaces</artifactId>
+            <version>26.10.6</version>
+        </dependency>
+
         <!-- Common Libraries -->
         <dependency>
             <groupId>org.fireflyframework</groupId>
@@ -46,6 +52,24 @@
         <dependency>
             <groupId>io.fireflysoftware</groupId>
             <artifactId>core-common-reference-master-data-sdk</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.fireflysoftware</groupId>
+            <artifactId>core-common-org-mgmt-sdk</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.fireflyframework</groupId>
+            <artifactId>fireflyframework-r2dbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-jose</artifactId>
         </dependency>
 
         <!-- Mapping -->

@@ -39,7 +39,19 @@ public final class GlAccountingDatabaseContext {
         this.database = database;
     }
 
+    io.r2dbc.spi.ConnectionFactory connectionFactory() { return database.getConnectionFactory(); }
+    org.springframework.r2dbc.core.DatabaseClient databaseClient() { return database; }
+
     Mono<Void> establish(GlAccountingAuthority.Admission admission) {
+        return establish(admission, this::installLegacy);
+    }
+
+    Mono<GlNativeContextStamp> establishWithNativeTime(GlAccountingAuthority.Admission admission) {
+        return establish(admission, this::installNative);
+    }
+
+    private <T> Mono<T> establish(GlAccountingAuthority.Admission admission,
+            java.util.function.Function<InstalledContext, Mono<T>> installer) {
         return TransactionSynchronizationManager.forCurrentTransaction()
                 .onErrorMap(NoTransactionException.class, error -> unavailable())
                 .flatMap(
@@ -150,7 +162,21 @@ public final class GlAccountingDatabaseContext {
                                                         Mono.defer(
                                                                 () -> {
                                                                     admission.requireCurrent();
-                                                                    return database.sql(
+                                                                    return installer.apply(new InstalledContext(admission, action, posting, accounts));
+                                                                }));
+                                    });
+                        });
+    }
+
+
+    private record InstalledContext(GlAccountingAuthority.Admission admission,
+            String action, String posting, String accounts) {}
+
+    private Mono<Void> installLegacy(InstalledContext installed) {
+        var admission=installed.admission(); var intent=admission.intent();
+        var action=installed.action(); var posting=installed.posting(); var accounts=installed.accounts();
+        admission.requireCurrent();
+        return database.sql(
                                                                                     """
                                                                                     SELECT set_config('firefly.gl.xid',pg_current_xact_id()::text,true),
                                                                                       set_config('firefly.gl.tenant',:tenant,true),set_config('firefly.gl.book',:book,true),
@@ -200,9 +226,98 @@ public final class GlAccountingDatabaseContext {
                                                                             .fetch()
                                                                             .rowsUpdated()
                                                                             .then();
-                                                                }));
-                                    });
-                        });
+    }
+
+
+    private Mono<GlNativeContextStamp> installNative(InstalledContext installed) {
+        var admission=installed.admission(); var intent=admission.intent();
+        var action=installed.action(); var posting=installed.posting(); var accounts=installed.accounts();
+        admission.requireCurrent();
+        return database.sql(
+                                                                                    """
+WITH gl_clock AS MATERIALIZED (
+  SELECT floor(extract(epoch FROM clock_timestamp())*1000)::bigint AS db_now_ms
+), bounded AS MATERIALIZED (
+  SELECT db_now_ms,LEAST(CAST(:until AS bigint),db_now_ms+30000) AS effective_until
+  FROM gl_clock WHERE CAST(:until AS bigint)>db_now_ms+1
+), installed AS MATERIALIZED (
+  SELECT db_now_ms,
+    set_config('firefly.gl.xid',pg_current_xact_id()::text,true) AS transaction_id,
+    set_config('firefly.gl.tenant',:tenant,true) AS tenant_id,
+    set_config('firefly.gl.book',:book,true) AS book_id,
+    set_config('firefly.gl.operation',:operation,true) AS operation,
+    set_config('firefly.gl.action',:action,true) AS action_id,
+    set_config('firefly.gl.posting',:posting,true) AS posting_id,
+    set_config('firefly.gl.intent',:intent,true) AS intent_digest,
+    set_config('firefly.gl.accounts',:accounts,true) AS account_ids,
+    set_config('firefly.gl.authority_until',effective_until::text,true) AS installed_until,
+    set_config('firefly.gl.actor_issuer',:issuer,true) AS actor_issuer,
+    set_config('firefly.gl.actor_subject',:subject,true) AS actor_subject
+  FROM bounded
+)
+SELECT db_now_ms,CAST(installed_until AS bigint) AS effective_until_ms,
+  transaction_id,tenant_id,book_id,operation,action_id,posting_id,
+  intent_digest,account_ids,actor_issuer,actor_subject FROM installed
+""")
+                                                                            .bind(
+                                                                                    "issuer",
+                                                                                    admission
+                                                                                            .actor()
+                                                                                            .issuer())
+                                                                            .bind(
+                                                                                    "subject",
+                                                                                    admission
+                                                                                            .actor()
+                                                                                            .subject())
+                                                                            .bind(
+                                                                                    "tenant",
+                                                                                    intent
+                                                                                            .tenantId())
+                                                                            .bind(
+                                                                                    "book",
+                                                                                    intent.bookId())
+                                                                            .bind(
+                                                                                    "operation",
+                                                                                    intent
+                                                                                            .operation())
+                                                                            .bind("action", action)
+                                                                            .bind(
+                                                                                    "posting",
+                                                                                    posting)
+                                                                            .bind(
+                                                                                    "intent",
+                                                                                    intent
+                                                                                            .intentDigest())
+                                                                            .bind(
+                                                                                    "accounts",
+                                                                                    accounts)
+                                                                            .bind(
+                                                                                    "until",
+                                                                                    admission
+                                                                                            .validUntilEpochMillis()
+                                                                                            .toString())
+                                                                            .map((row, metadata) -> nativeStamp(row, installed)).one()
+                .switchIfEmpty(Mono.error(unavailable()));
+    }
+
+    private static GlNativeContextStamp nativeStamp(io.r2dbc.spi.Row row, InstalledContext installed) {
+        var admission=installed.admission(); var intent=admission.intent();
+        Long recorded=row.get("db_now_ms",Long.class), until=row.get("effective_until_ms",Long.class);
+        if(recorded==null||until==null||recorded<=0||recorded>GlPostingRules.MAX_TIME||until<=recorded+1
+                ||until>admission.validUntilEpochMillis()||until>GlPostingRules.MAX_TIME
+                ||until-recorded>30000
+                ||!intent.tenantId().equals(row.get("tenant_id",String.class))
+                ||!intent.bookId().equals(row.get("book_id",String.class))
+                ||!intent.operation().equals(row.get("operation",String.class))
+                ||!installed.action().equals(row.get("action_id",String.class))
+                ||!installed.posting().equals(row.get("posting_id",String.class))
+                ||!intent.intentDigest().equals(row.get("intent_digest",String.class))
+                ||!installed.accounts().equals(row.get("account_ids",String.class))
+                ||!admission.actor().issuer().equals(row.get("actor_issuer",String.class))
+                ||!admission.actor().subject().equals(row.get("actor_subject",String.class))) throw unavailable();
+        String xid=row.get("transaction_id",String.class);
+        if(xid==null||!xid.matches("[1-9][0-9]{0,19}")) throw unavailable();
+        return new GlNativeContextStamp(recorded,until);
     }
 
     private static ResponseStatusException denied() {
