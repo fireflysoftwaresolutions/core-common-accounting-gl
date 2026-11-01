@@ -23,6 +23,7 @@ import io.fireflysoftware.core.accounting.invoker.ApiClient;
 import io.fireflysoftware.core.accounting.sdk.api.JournalBatchesApi;
 import io.fireflysoftware.core.accounting.sdk.api.JournalLinesApi;
 import io.fireflysoftware.core.accounting.sdk.model.JournalBatchDTO;
+import io.fireflysoftware.core.accounting.sdk.impl.GlLegacySignedAuthorityFixtureImpl;
 
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.*;
@@ -66,6 +67,9 @@ class GlLegacySafetyRuntimeIT {
     static final Duration WAIT = Duration.ofSeconds(15);
     static Process app;
     static int port;
+    static String cachePassword;
+    static GlLegacySignedAuthorityFixtureImpl signedAuthority;
+    static String fixtureBearer;
 
     static void owner(String sql) throws Exception {
         try (var c =
@@ -132,13 +136,38 @@ class GlLegacySafetyRuntimeIT {
                         + "','"
                         + ACCOUNT
                         + "',1,'DR');");
+        byte[] cachePasswordBytes = new byte[32];
+        new java.security.SecureRandom().nextBytes(cachePasswordBytes);
+        cachePassword = Base64.getUrlEncoder().withoutPadding().encodeToString(cachePasswordBytes);
+        owner("CREATE ROLE gl_cache_app LOGIN PASSWORD '" + cachePassword + "' NOSUPERUSER"
+                + " NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS;"
+                + " REVOKE CONNECT ON DATABASE synthetic_gl_legacy FROM PUBLIC;"
+                + " GRANT CONNECT ON DATABASE synthetic_gl_legacy TO gl_legacy_app");
+        // CREATE DATABASE cannot run in the multi-statement transaction above.
+        owner("CREATE DATABASE synthetic_gl_cache");
+        try (var connection = DriverManager.getConnection(cacheJdbcUrl(),
+                postgres.getUsername(), postgres.getPassword()); var statement = connection.createStatement()) {
+            statement.execute("REVOKE CONNECT ON DATABASE synthetic_gl_cache FROM PUBLIC;"
+                    + " GRANT CONNECT ON DATABASE synthetic_gl_cache TO gl_cache_app;"
+                    + " REVOKE CREATE ON SCHEMA public FROM PUBLIC;"
+                    + " CREATE SCHEMA firefly_gl_cache;"
+                    + " CREATE TABLE firefly_gl_cache.cache_entries (cache_name VARCHAR(255) NOT NULL,"
+                    + " cache_key VARCHAR(1024) NOT NULL, value BYTEA NOT NULL, expires_at TIMESTAMPTZ,"
+                    + " created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), PRIMARY KEY(cache_name,cache_key));"
+                    + " CREATE INDEX cache_entries_expiry ON firefly_gl_cache.cache_entries(expires_at)"
+                    + " WHERE expires_at IS NOT NULL;"
+                    + " GRANT USAGE ON SCHEMA firefly_gl_cache TO gl_cache_app;"
+                    + " GRANT SELECT,INSERT,UPDATE,DELETE ON firefly_gl_cache.cache_entries TO gl_cache_app");
+        }
         try (var socket = new java.net.ServerSocket(0, 1, InetAddress.getLoopbackAddress())) {
             port = socket.getLocalPort();
         }
+        signedAuthority = new GlLegacySignedAuthorityFixtureImpl();
+        fixtureBearer = signedAuthority.token();
         var jar =
                 Path.of("../core-common-accounting-gl-web/target/core-common-accounting-gl.jar")
                         .toAbsolutePath();
-        app =
+        var appBuilder =
                 new ProcessBuilder(
                                 Path.of(System.getProperty("java.home"), "bin/java").toString(),
                                 "-Xmx384m",
@@ -152,37 +181,86 @@ class GlLegacySafetyRuntimeIT {
                                 "--DB_USERNAME=gl_legacy_app",
                                 "--DB_PASSWORD=synthetic-only",
                                 "--DB_SSL_MODE=disable",
+                                "--CACHE_DB_HOST=" + postgres.getHost(),
+                                "--CACHE_DB_PORT=" + postgres.getMappedPort(5432),
+                                "--CACHE_DB_NAME=synthetic_gl_cache",
+                                "--CACHE_DB_USERNAME=gl_cache_app",
+                                "--CACHE_DB_SSL_MODE=disable",
+                                "--CACHE_DB_SCHEMA=firefly_gl_cache",
+                                "--firefly.security.resource-server.strict-policy=true",
+                                "--firefly.security.resource-server.issuer=" + signedAuthority.issuer(),
+                                "--firefly.security.resource-server.jwk-set-uri=" + signedAuthority.baseUrl() + "/jwks",
+                                "--firefly.security.resource-server.audiences=" + GlLegacySignedAuthorityFixtureImpl.AUDIENCE,
+                                "--firefly.security.resource-server.tenant-claim-paths=tenant",
+                                "--firefly.security.resource-server.tenant-required=true",
+                                "--firefly.security.resource-server.scope-claim-paths=scope",
+                                "--firefly.accounting.authorization.opa.enabled=true",
+                                "--firefly.accounting.authorization.opa.base-url=" + signedAuthority.baseUrl(),
+                                "--firefly.accounting.authorization.opa.allow-loopback-http=true",
+                                "--firefly.accounting.authorization.opa.decision-path=gl-legacy/allow",
+                                "--firefly.accounting.authorization.opa.evaluation-path=gl-legacy/current",
                                 "--spring.flyway.enabled=false",
                                 "--firefly.eda.enabled=false",
                                 "--firefly.stepevents.enabled=false")
                         .redirectErrorStream(true)
-                        .redirectOutput(Path.of("target/legacy-gl-native.log").toFile())
-                        .start();
+                        .redirectOutput(Path.of("target/legacy-gl-native.log").toFile());
+        appBuilder.environment().put("CACHE_DB_PASSWORD", cachePassword);
+        app = appBuilder.start();
+        var statuses = new TreeMap<Integer, Integer>();
+        var transportErrors = new TreeMap<String, Integer>();
+        int lastStatus = -1, lastBytes = 0;
+        String lastDigest = "";
         for (int i = 0; i < 160; i++) {
-            if (!app.isAlive()) throw new IllegalStateException("Private legacy GL exited");
+            if (!app.isAlive()) {
+                readiness(i, statuses, transportErrors, lastStatus, lastBytes, lastDigest, "CHILD_EXITED");
+                throw new IllegalStateException("Private legacy GL exited");
+            }
             try {
-                if (get("/v3/api-docs").statusCode() == 200) return;
-            } catch (Exception ignored) {
+                var response = documentation(fixtureBearer);
+                lastStatus = response.statusCode();lastBytes = response.body().length;
+                lastDigest = HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(response.body()));
+                statuses.merge(lastStatus, 1, Integer::sum);
+                readiness(i + 1, statuses, transportErrors, lastStatus, lastBytes, lastDigest,
+                        lastStatus == 200 ? "READY" : "POLLING");
+                if (lastStatus == 200) return;
+            } catch (java.io.IOException | InterruptedException error) {
+                transportErrors.merge(error.getClass().getName(), 1, Integer::sum);
+                readiness(i + 1, statuses, transportErrors, lastStatus, lastBytes, lastDigest, "POLLING");
+                if (error instanceof InterruptedException) {Thread.currentThread().interrupt();throw error;}
             }
             Thread.sleep(250);
         }
+        readiness(160, statuses, transportErrors, lastStatus, lastBytes, lastDigest, "TIMEOUT");
         throw new IllegalStateException("Private legacy GL readiness timeout");
+    }
+
+    static void readiness(int attempts, Map<Integer, Integer> statuses, Map<String, Integer> errors,
+            int lastStatus, int lastBytes, String lastDigest, String outcome) throws Exception {
+        Files.writeString(Path.of("target/legacy-gl-readiness.json"), new ObjectMapper().writeValueAsString(Map.of(
+                "schema", "GL_LEGACY_READINESS_V1", "attempts", attempts, "maximumAttempts", 160,
+                "statusCounts", statuses, "transportErrorCounts", errors, "lastStatus", lastStatus,
+                "lastBodyBytes", lastBytes, "lastBodySha256", lastDigest, "outcome", outcome)) + "\n");
     }
 
     @AfterAll
     static void stop() throws Exception {
-        if (app != null) {
-            app.destroy();
-            if (!app.waitFor(10, java.util.concurrent.TimeUnit.SECONDS)) {
-                app.destroyForcibly();
-                assertThat(app.waitFor(5, java.util.concurrent.TimeUnit.SECONDS)).isTrue();
+        try {
+            if (app != null) {
+                app.destroy();
+                if (!app.waitFor(10, java.util.concurrent.TimeUnit.SECONDS)) {
+                    app.destroyForcibly();
+                    assertThat(app.waitFor(5, java.util.concurrent.TimeUnit.SECONDS)).isTrue();
+                }
             }
+        } finally {
+            if (signedAuthority != null) signedAuthority.close();
         }
     }
 
     static ApiClient client() {
         var c = new ApiClient();
         c.setBasePath("http://127.0.0.1:" + port);
+        c.addDefaultHeader("Authorization", "Bearer " + fixtureBearer);
         return c;
     }
 
@@ -191,9 +269,97 @@ class GlLegacySafetyRuntimeIT {
                 .send(
                         HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port + path))
                                 .timeout(Duration.ofSeconds(10))
+                                .header("Authorization", "Bearer " + fixtureBearer)
                                 .GET()
                                 .build(),
                         HttpResponse.BodyHandlers.ofString());
+    }
+
+    static String cacheJdbcUrl() {
+        return "jdbc:postgresql://" + postgres.getHost() + ":" + postgres.getMappedPort(5432)
+                + "/synthetic_gl_cache";
+    }
+
+    static HttpResponse<byte[]> documentation(String bearer) throws Exception {
+        var request = HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port + "/v3/api-docs"))
+                .timeout(Duration.ofSeconds(10)).GET();
+        if (bearer != null) request.header("Authorization", "Bearer " + bearer);
+        return HttpClient.newHttpClient().send(request.build(), HttpResponse.BodyHandlers.ofByteArray());
+    }
+
+    @Test
+    void originalMainRequiresSignedIssuerAudienceTenantAndScopedPolicy() throws Exception {
+        var probes = new TreeMap<String, HttpResponse<byte[]>>();
+        probes.put("missing", documentation(null));
+        probes.put("badSignature", documentation(signedAuthority.invalidSignature()));
+        probes.put("wrongIssuer", documentation(signedAuthority.token("https://untrusted.synthetic.invalid",
+                GlLegacySignedAuthorityFixtureImpl.AUDIENCE, signedAuthority.tenant(), GlLegacySignedAuthorityFixtureImpl.SCOPE)));
+        probes.put("wrongAudience", documentation(signedAuthority.token(signedAuthority.issuer(), "synthetic-wrong-audience",
+                signedAuthority.tenant(), GlLegacySignedAuthorityFixtureImpl.SCOPE)));
+        probes.put("wrongTenant", documentation(signedAuthority.token(signedAuthority.issuer(), GlLegacySignedAuthorityFixtureImpl.AUDIENCE,
+                UUID.randomUUID().toString(), GlLegacySignedAuthorityFixtureImpl.SCOPE)));
+        probes.put("wrongScope", documentation(signedAuthority.token(signedAuthority.issuer(), GlLegacySignedAuthorityFixtureImpl.AUDIENCE,
+                signedAuthority.tenant(), "gl:unrelated")));
+        var receipts = new TreeMap<String, Object>();
+        for (var entry : probes.entrySet()) {
+            var response = entry.getValue();
+            receipts.put(entry.getKey(), Map.of("status", response.statusCode(), "bodyBytes", response.body().length,
+                    "bodySha256", HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(response.body()))));
+        }
+        Files.writeString(Path.of("target/legacy-gl-auth-proof.json"), new ObjectMapper().writeValueAsString(
+                Map.of("authority", signedAuthority.proof(), "negativeResponses", receipts)) + "\n");
+        for (var response : probes.values()) assertThat(response.statusCode()).isIn(401, 403);
+        assertThat(probes.get("wrongScope").statusCode()).isEqualTo(403);
+        assertThat(probes.get("wrongTenant").statusCode()).isEqualTo(403);
+        assertThat(signedAuthority.proof().get("jwksRequests")).isInstanceOfSatisfying(Integer.class, count -> assertThat(count).isGreaterThan(0));
+        assertThat(signedAuthority.proof().get("policyPermits")).isInstanceOfSatisfying(Integer.class, count -> assertThat(count).isGreaterThan(0));
+        assertThat(documentation(fixtureBearer).statusCode()).isEqualTo(200);
+    }
+
+    @Test
+    void technicalCacheUsesItsOwnRestrictedDatabaseAndLogin() throws Exception {
+        try (var connection = DriverManager.getConnection(cacheJdbcUrl(),
+                "gl_cache_app", cachePassword); var statement = connection.createStatement();
+                var rows = statement.executeQuery("SELECT current_database(), current_user,"
+                        + " has_schema_privilege(current_user,'firefly_gl_cache','USAGE'),"
+                        + " has_schema_privilege(current_user,'firefly_gl_cache','CREATE'),"
+                        + " (has_table_privilege(current_user,'firefly_gl_cache.cache_entries','SELECT')"
+                        + " AND has_table_privilege(current_user,'firefly_gl_cache.cache_entries','INSERT')"
+                        + " AND has_table_privilege(current_user,'firefly_gl_cache.cache_entries','UPDATE')"
+                        + " AND has_table_privilege(current_user,'firefly_gl_cache.cache_entries','DELETE')),"
+                        + " rolsuper, rolbypassrls, rolcreatedb, rolcreaterole,"
+                        + " (SELECT pg_get_userbyid(relowner) <> current_user FROM pg_class"
+                        + " WHERE oid='firefly_gl_cache.cache_entries'::regclass),"
+                        + " has_table_privilege(current_user,'firefly_gl_cache.cache_entries','TRUNCATE')"
+                        + " FROM pg_roles WHERE rolname=current_user")) {
+            assertThat(rows.next()).isTrue();
+            assertThat(rows.getString(1)).isEqualTo("synthetic_gl_cache");
+            assertThat(rows.getString(2)).isEqualTo("gl_cache_app");
+            assertThat(rows.getBoolean(3)).isTrue();
+            assertThat(rows.getBoolean(4)).isFalse();
+            assertThat(rows.getBoolean(5)).isTrue();
+            for (int column = 6; column <= 9; column++) assertThat(rows.getBoolean(column)).isFalse();
+            assertThat(rows.getBoolean(10)).isTrue();
+            assertThat(rows.getBoolean(11)).isFalse();
+            assertThat(rows.next()).isFalse();
+        }
+        for (var denied : List.of(
+                new String[] {cacheJdbcUrl(), "gl_legacy_app", "synthetic-only"},
+                new String[] {postgres.getJdbcUrl(), "gl_cache_app", cachePassword})) {
+            assertThatThrownBy(() -> {
+                try (var ignored = DriverManager.getConnection(denied[0], denied[1], denied[2])) {
+                    fail("Cross-purpose database connection must be refused");
+                }
+            }).isInstanceOfSatisfying(java.sql.SQLException.class,
+                    error -> assertThat(error.getSQLState()).isEqualTo("42501"));
+        }
+        try (var connection = DriverManager.getConnection(postgres.getJdbcUrl(),
+                postgres.getUsername(), postgres.getPassword()); var statement = connection.createStatement();
+                var rows = statement.executeQuery("SELECT count(*) FROM pg_stat_activity"
+                        + " WHERE datname='synthetic_gl_cache' AND usename='gl_cache_app'")) {
+            assertThat(rows.next()).isTrue();
+            assertThat(rows.getLong(1)).isGreaterThan(0);
+        }
     }
 
     @Test
@@ -320,6 +486,7 @@ class GlLegacySafetyRuntimeIT {
         var builder =
                 HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port + path))
                         .timeout(Duration.ofSeconds(10))
+                        .header("Authorization", "Bearer " + fixtureBearer)
                         .header("Content-Type", "application/json");
         return HttpClient.newHttpClient()
                 .send(
@@ -505,6 +672,7 @@ class GlLegacySafetyRuntimeIT {
                     client.send(
                             HttpRequest.newBuilder(path)
                                     .header("Content-Type", "application/json")
+                                    .header("Authorization", "Bearer " + fixtureBearer)
                                     .header("X-Idempotency-Key", key)
                                     .POST(HttpRequest.BodyPublishers.ofString(body))
                                     .build(),
