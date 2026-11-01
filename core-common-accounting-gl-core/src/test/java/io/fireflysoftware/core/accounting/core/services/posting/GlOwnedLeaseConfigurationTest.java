@@ -2,6 +2,7 @@
 package io.fireflysoftware.core.accounting.core.services.posting;
 
 import io.fireflysoftware.core.accounting.models.repositories.posting.impl.GlNativePostingRepositoryImpl;
+import io.fireflysoftware.core.accounting.models.repositories.posting.GlNativePostingResources;
 import java.time.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -43,8 +44,8 @@ class GlOwnedLeaseConfigurationTest {
             context.registerBean("sourceAuditing", ReactiveAuditingEntityCallback.class, () -> new ReactiveAuditingEntityCallback(() -> handler));
             context.registerBean("sourceProbe", Probe.class, () -> probe);
             context.register(GlNativePostingConfiguration.class, GlNativePostingRepositoryImpl.class); context.refresh();
-            assertTrue(context.containsBean("glNativePostingTemplate"), "Dedicated managed native template required");
-            var nativeTemplate = context.getBean("glNativePostingTemplate", R2dbcEntityTemplate.class);
+            assertTrue(context.containsBean("glNativePostingResources"), "Dedicated managed native template required");
+            var nativeTemplate = context.getBean("glNativePostingResources", GlNativePostingResources.class).template();
             assertSame(original.getConverter(), nativeTemplate.getConverter()); assertSame(original.getDataAccessStrategy(), nativeTemplate.getDataAccessStrategy());
             var cf = nativeTemplate.getDatabaseClient().getConnectionFactory(); assertNotSame(driver, cf);
             var tx=context.getBean("glNativePostingTransaction", GlAccountingTransaction.class);
@@ -70,7 +71,30 @@ class GlOwnedLeaseConfigurationTest {
         try(var context=new AnnotationConfigApplicationContext()) {
             context.registerBean("r2dbcEntityTemplate",R2dbcEntityTemplate.class,()->new R2dbcEntityTemplate(driver));
             context.register(GlNativePostingConfiguration.class,GlNativePostingRepositoryImpl.class);context.refresh();
-            assertFalse(context.containsBean("glNativePostingTemplate"));assertFalse(context.containsBean("glNativePostingTransaction"));assertFalse(context.containsBean("glNativePostingRepository"));assertEquals(0,driver.creates);
+            assertFalse(context.containsBean("glNativePostingResources"));assertFalse(context.containsBean("glNativePostingTransaction"));assertFalse(context.containsBean("glNativePostingRepository"));assertEquals(0,driver.creates);
+        }
+    }
+    @Test void nativeRepositorySupportsSpringClassProxyExceptionTranslationWithoutAcquisition() throws Exception {
+        var driver = new GlBeginLeaseTest.Driver();
+        var original = new R2dbcEntityTemplate(driver);
+        try (var context = new AnnotationConfigApplicationContext()) {
+            context.getEnvironment().getPropertySources().addFirst(new MapPropertySource("source-enabled", Map.of("firefly.accounting.native-posting.enabled", "true")));
+            context.registerBean("persistenceExceptionTranslationPostProcessor", org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor.class, () -> {
+                var processor = new org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor();
+                processor.setProxyTargetClass(true);
+                return processor;
+            });
+            context.registerBean("r2dbcEntityTemplate", R2dbcEntityTemplate.class, () -> original);
+            context.register(GlNativePostingConfiguration.class, GlNativePostingRepositoryImpl.class);
+            context.refresh();
+            var repository = context.getBean("glNativePostingRepository", io.fireflysoftware.core.accounting.models.repositories.posting.GlNativePostingRepository.class);
+            assertTrue(org.springframework.aop.support.AopUtils.isCglibProxy(repository));
+            Object target = ((org.springframework.aop.framework.Advised) repository).getTargetSource().getTarget();
+            assertInstanceOf(GlNativePostingRepositoryImpl.class, target);
+            assertSame(context.getBean("glNativePostingResources", GlNativePostingResources.class).template(), field(target, "template"));
+            StepVerifier.create(repository.advanceSequence(UUID.randomUUID(), UUID.randomUUID(), Long.MAX_VALUE))
+                    .expectError(org.springframework.dao.OptimisticLockingFailureException.class).verify(Duration.ofSeconds(1));
+            assertEquals(0, driver.creates);
         }
     }
 }

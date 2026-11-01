@@ -18,8 +18,9 @@ package io.fireflysoftware.core.accounting.models.repositories.posting.impl;
 
 import io.fireflysoftware.core.accounting.models.entities.posting.*;
 import io.fireflysoftware.core.accounting.models.repositories.posting.GlNativePostingRepository;
+import io.fireflysoftware.core.accounting.models.repositories.posting.GlNativePostingResources;
 
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -35,11 +36,15 @@ import java.util.UUID;
 
 @Repository("glNativePostingRepository")
 @ConditionalOnProperty(name = "firefly.accounting.native-posting.enabled", havingValue = "true")
-public final class GlNativePostingRepositoryImpl implements GlNativePostingRepository {
+public class GlNativePostingRepositoryImpl implements GlNativePostingRepository {
     private final R2dbcEntityTemplate template;
 
-    public GlNativePostingRepositoryImpl(
-            @Qualifier("glNativePostingTemplate") R2dbcEntityTemplate template) {
+    @Autowired
+    public GlNativePostingRepositoryImpl(GlNativePostingResources resources) {
+        this(resources.template());
+    }
+
+    public GlNativePostingRepositoryImpl(R2dbcEntityTemplate template) {
         this.template = template;
     }
 

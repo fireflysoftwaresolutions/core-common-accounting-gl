@@ -17,6 +17,7 @@
 package io.fireflysoftware.core.accounting.core.services.posting;
 
 import org.fireflyframework.core.transaction.OwnedLeaseConnectionFactory;
+import io.fireflysoftware.core.accounting.models.repositories.posting.GlNativePostingResources;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -27,16 +28,24 @@ import org.springframework.r2dbc.connection.R2dbcTransactionManager;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty(name = "firefly.accounting.native-posting.enabled", havingValue = "true")
 public class GlNativePostingConfiguration {
-    @Bean("glNativePostingTemplate")
-    public R2dbcEntityTemplate nativeTemplate(@Qualifier("r2dbcEntityTemplate") R2dbcEntityTemplate original) {
+    @Bean("glNativePostingResources")
+    public GlNativePostingResources nativeResources(@Qualifier("r2dbcEntityTemplate") R2dbcEntityTemplate original) {
+        return new GlNativePostingResources(nativeTemplate(original));
+    }
+
+    public R2dbcEntityTemplate nativeTemplate(R2dbcEntityTemplate original) {
         var factory=new OwnedLeaseConnectionFactory(original.getDatabaseClient().getConnectionFactory());
         var client=org.springframework.r2dbc.core.DatabaseClient.create(factory);
         return new R2dbcEntityTemplate(client,original.getDataAccessStrategy());
     }
 
     @Bean("glNativePostingTransaction")
-    public GlAccountingTransaction transaction(
-            @Qualifier("glNativePostingTemplate") R2dbcEntityTemplate template) {
+    public GlAccountingTransaction nativeTransaction(
+            GlNativePostingResources resources) {
+        return transaction(resources.template());
+    }
+
+    public GlAccountingTransaction transaction(R2dbcEntityTemplate template) {
         var client = template.getDatabaseClient();
         if(!(client.getConnectionFactory() instanceof OwnedLeaseConnectionFactory))
             throw new IllegalStateException("Protected native template required for native posting composition");

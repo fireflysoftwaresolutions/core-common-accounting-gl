@@ -1,6 +1,6 @@
 # Atomic accounting owner foundations
 
-This source checkpoint establishes the native GL data model, exact journal invariants, current authority boundary, and scoped database context. Native enrollment/control receipts, CQRS financial handlers, protected owner APIs, a newly generated owner client, and source-to-GL delivery are still being implemented. Existing accounting and loan consumers must migrate before production rollout because legacy journal routes now support drafting and refuse new financial finalization.
+This source checkpoint establishes the native GL data model, exact journal invariants, current authority boundary, and scoped database context. Protected POST and same-request recovery HTTP source is present but awaits original-producer, SDK and runtime qualification. Native enrollment/control receipts, additional financial handlers and source-to-GL delivery are still being implemented. Existing accounting and loan consumers must migrate before production rollout because legacy journal routes now support drafting and refuse new financial finalization.
 
 ## Financial ownership and representations
 
@@ -33,6 +33,16 @@ The insert guard binds the exact tenant/book/action, source key, deadline, accou
 Actions created by the earlier foundation protocol remain explicitly GL_FOUNDATION_V1 with no invented original body. Migration preserves their bytes and immutable history. They are unverified foundation records, not complete approved financial proof, and new inserts cannot choose that shape. A future native service must refuse to treat those rows as an authoritative FOUND financial observation without an explicit reviewed migration.
 
 ## Current authority before transactions
+
+### Protected posting transport
+
+`POST /api/v1/tenants/{tenantId}/books/{bookId}/postings` delegates the complete original JSON request to the existing posting service. `POST` on the same path plus `/recovery` is a protected read using that same original request, not a new mutation. Both bypass generic HTTP idempotency caching and return `Cache-Control: no-store`. The owner retains the existing default-off native-posting switch and requires real approval, source and currency capabilities. Bearer documentation does not replace the existing native authentication and current PDP checks.
+
+The controller bounds original UTF-8 bytes to the existing 1 MiB contract and uses the existing strict intent codec before invocation. It accepts a returned receipt only when its action and intent digest match that request. Recovery additionally requires the owner's retained-recovery flag. The original canonical formats, database roles, admissions and transaction protocol are unchanged.
+
+Owner HTTP error statuses remain errors. The new controller's typed error body contains only a status, a fixed code and, for an exact owner observation, the original action reference. It never includes a throwable, private receipt or upstream diagnostic. `GL_POSTING_COMMIT_KNOWN_RECOVERY_REQUIRED` and `GL_POSTING_OUTCOME_UNCERTAIN_RECOVERY_REQUIRED` preserve HTTP 503 and require protected recovery with the same action and request. Generic failures, empty/mismatched results, and a recovery 404 do not prove no effects or authorize a new action. No automatic mutation retry or no-effect closure is introduced.
+
+Original Springdoc must emit the complete `GlPostingRequest` object, receipt and error schemas before official SDK generation. No SDK code or specification is handwritten. The maintained producer contract tests use the original producer in process and explicit OpenAPI 3.0 compatibility with the committed 3.0.1 baseline; that test alone does not qualify a listening application, generated client or financial journey.
 
 Native operations require the existing SecurityContextPort and PolicyDecisionPort, a finite real principal, and explicit strict-policy opt-in:
 
@@ -95,4 +105,4 @@ Replace `application_role` with the actual restricted runtime role. This grant d
 
 Existing OPEN batch/entry/line drafting remains available. New legacy POSTED/REVERSED batches, posted entries, and generic financial mutation/deletion are refused. Parent identities are checked across batch, entry, and line routes. Historical posted data and enrolled source-chart identities are fenced against mutable CRUD. Generic source-chart reads hide enrolled metadata while preserving unused legacy drafts.
 
-The native financial API and migration adapters are not present in this checkpoint. A production cutover must first deliver protected native commands, the administrative receipt namespace, typed generated clients, exact source observations, retained read/history/report projections, and accounting-domain/loan-servicing migration. An SQL-level fixture exercising balanced journals does not establish a live financial-source projection, provider settlement, IFRS9/IFRS17 calculations, reporting compliance, or a complete customer journey.
+Protected native POST and recovery source does not complete production cutover. The administrative receipt namespace, qualified generated clients, real approval/source integrations, additional retained projections, and accounting-domain/loan-servicing migration remain required. Reversal and no-effect reconciliation remain closed. An SQL-level fixture exercising balanced journals does not establish a live financial-source projection, provider settlement, IFRS9/IFRS17 calculations, reporting compliance, or a complete customer journey.

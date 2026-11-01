@@ -3,15 +3,21 @@ info:
   title: OpenAPI definition
   version: v0
 servers:
-- url: http://localhost:18080
+- url: ""
   description: Generated server url
 tags:
 - name: GL Accounts
   description: API for managing GL Accounts
+- name: FinancialApprovals
+  description: Exact retained maker/checker lifecycle; approval alone does not execute
+    a journal
 - name: Journal Entries
   description: API for managing Journal Entries (nested under Journal Batches)
 - name: Journal Batches
   description: API for managing Journal Batches
+- name: NativeJournalPostings
+  description: Protected exact posting and same-request recovery; no reversal or no-effect
+    closure
 - name: Journal Lines
   description: API for managing Journal Lines (nested under Journal Entries)
 paths:
@@ -417,6 +423,430 @@ paths:
       responses:
         "204":
           description: GL Account deleted
+  /api/v1/tenants/{tenantId}/books/{bookId}/postings/recovery:
+    post:
+      tags:
+      - NativeJournalPostings
+      summary: Read the retained posting using the complete original request
+      description: "Authorized recovery performs no new posting. A 404 is an observation\
+        \ at this read, not an audited no-effect closure or permission to allocate\
+        \ a new action."
+      operationId: recoverNativeJournal
+      parameters:
+      - name: tenantId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: bookId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GlPostingRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GlPostingReceipt"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GlPostingErrorResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GlPostingErrorResponse"
+        "401":
+          description: Current bearer authentication required
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/GlPostingReceipt"
+        "403":
+          description: Current scoped policy and owner approval required
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/GlPostingReceipt"
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GlPostingErrorResponse"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GlPostingErrorResponse"
+        "503":
+          description: "Unavailable or uncertain: retain the original action and use\
+            \ protected recovery; never infer no effects"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GlPostingErrorResponse"
+        default:
+          description: Other failures retain their HTTP status; no failure implies
+            no effects or authorizes a new action
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/GlPostingReceipt"
+      security:
+      - glBearer: []
+      x-disable-idempotency: true
+  /api/v1/tenants/{tenantId}/books/{bookId}/postings:
+    post:
+      tags:
+      - NativeJournalPostings
+      summary: Post the exact original journal request
+      description: "The action ID and complete original request remain stable across\
+        \ recovery. Current owner approval, source and currency observations are required.\
+        \ A non-success response does not prove no financial effects."
+      operationId: postNativeJournal
+      parameters:
+      - name: tenantId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: bookId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GlPostingRequest"
+        required: true
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GlPostingErrorResponse"
+        "401":
+          description: Current bearer authentication required
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/GlPostingReceipt"
+        "403":
+          description: Current scoped policy and owner approval required
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/GlPostingReceipt"
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GlPostingErrorResponse"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GlPostingErrorResponse"
+        "503":
+          description: "Unavailable or uncertain: retain the original action and use\
+            \ protected recovery; never infer no effects"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GlPostingErrorResponse"
+        default:
+          description: Other failures retain their HTTP status; no failure implies
+            no effects or authorizes a new action
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/GlPostingReceipt"
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GlPostingReceipt"
+      security:
+      - glBearer: []
+      x-disable-idempotency: true
+  /api/v1/tenants/{tenantId}/books/{bookId}/financial-approvals/{approvalId}/revoke:
+    post:
+      tags:
+      - FinancialApprovals
+      summary: Revoke the retained approval at its expected revision
+      operationId: revokeFinancialApproval
+      parameters:
+      - name: tenantId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: bookId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: approvalId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GlFinancialApprovalTransitionRequest"
+        required: true
+      responses:
+        "400":
+          description: Complete bounded original command required
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/GlFinancialApprovalReceipt"
+        "401":
+          description: Current bearer authentication required
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/GlFinancialApprovalReceipt"
+        "403":
+          description: Current scoped owner policy and independent staff identity
+            required
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/GlFinancialApprovalReceipt"
+        "503":
+          description: "Unobserved completion: retain the original approval and command\
+            \ identities; read current state before recovery"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/GlFinancialApprovalReceipt"
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GlFinancialApprovalReceipt"
+      security:
+      - glBearer: []
+      x-disable-idempotency: true
+  /api/v1/tenants/{tenantId}/books/{bookId}/financial-approvals/{approvalId}/check:
+    post:
+      tags:
+      - FinancialApprovals
+      summary: Independently check the exact retained proposal at its expected revision
+      operationId: checkFinancialApproval
+      parameters:
+      - name: tenantId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: bookId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: approvalId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GlFinancialApprovalCheckRequest"
+        required: true
+      responses:
+        "400":
+          description: Complete bounded original command required
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/GlFinancialApprovalReceipt"
+        "401":
+          description: Current bearer authentication required
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/GlFinancialApprovalReceipt"
+        "403":
+          description: Current scoped owner policy and independent staff identity
+            required
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/GlFinancialApprovalReceipt"
+        "503":
+          description: "Unobserved completion: retain the original approval and command\
+            \ identities; read current state before recovery"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/GlFinancialApprovalReceipt"
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GlFinancialApprovalReceipt"
+      security:
+      - glBearer: []
+      x-disable-idempotency: true
+  /api/v1/tenants/{tenantId}/books/{bookId}/financial-approvals/{approvalId}:
+    get:
+      tags:
+      - FinancialApprovals
+      summary: Review the currently authorized complete retained posting and mapping
+        snapshot
+      operationId: readFinancialApproval
+      parameters:
+      - name: tenantId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: bookId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: approvalId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "400":
+          description: Complete bounded original command required
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/GlFinancialApprovalDetail"
+        "401":
+          description: Current bearer authentication required
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/GlFinancialApprovalDetail"
+        "403":
+          description: Current scoped owner policy and independent staff identity
+            required
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/GlFinancialApprovalDetail"
+        "503":
+          description: "Unobserved completion: retain the original approval and command\
+            \ identities; read current state before recovery"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/GlFinancialApprovalDetail"
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GlFinancialApprovalDetail"
+      security:
+      - glBearer: []
+      x-disable-idempotency: true
+    post:
+      tags:
+      - FinancialApprovals
+      summary: Request approval for the complete retained posting and full mapping
+        proposal
+      description: "Retain this approval ID, command ID and exact embedded originalPosting\
+        \ bytes. The proposal creates no authority; an independent checker and current\
+        \ owner state are required."
+      operationId: requestFinancialApproval
+      parameters:
+      - name: tenantId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: bookId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: approvalId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GlFinancialApprovalRequest"
+        required: true
+      responses:
+        "400":
+          description: Complete bounded original command required
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/GlFinancialApprovalReceipt"
+        "401":
+          description: Current bearer authentication required
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/GlFinancialApprovalReceipt"
+        "403":
+          description: Current scoped owner policy and independent staff identity
+            required
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/GlFinancialApprovalReceipt"
+        "503":
+          description: "Unobserved completion: retain the original approval and command\
+            \ identities; read current state before recovery"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/GlFinancialApprovalReceipt"
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GlFinancialApprovalReceipt"
+      security:
+      - glBearer: []
+      x-disable-idempotency: true
   /api/v1/journal-batches:
     post:
       tags:
@@ -1059,6 +1489,448 @@ components:
           format: date-time
         leaf:
           type: boolean
+    GlCurrencyReference:
+      required:
+      - currencyId
+      - digest
+      - encodingVersion
+      - isoCode
+      - policyId
+      - version
+      type: object
+      properties:
+        policyId:
+          type: string
+        currencyId:
+          type: string
+        isoCode:
+          type: string
+        version:
+          type: integer
+          format: int64
+        digest:
+          type: string
+        encodingVersion:
+          type: string
+      additionalProperties: false
+    GlPostingEntry:
+      required:
+      - description
+      - entryKey
+      - lines
+      type: object
+      properties:
+        entryKey:
+          type: string
+        description:
+          type: string
+        lines:
+          type: array
+          items:
+            $ref: "#/components/schemas/GlPostingLine"
+      additionalProperties: false
+    GlPostingLine:
+      required:
+      - accountId
+      - amountMinor
+      - currency
+      - currencyAdmissionId
+      - expectedAccountVersion
+      - expectedCurrencyVersion
+      - lineKey
+      - memo
+      - postedScale
+      - side
+      type: object
+      properties:
+        lineKey:
+          type: string
+        accountId:
+          type: string
+        expectedAccountVersion:
+          type: integer
+          format: int64
+        currencyAdmissionId:
+          type: string
+        expectedCurrencyVersion:
+          type: integer
+          format: int64
+        currency:
+          $ref: "#/components/schemas/GlCurrencyReference"
+        postedScale:
+          type: integer
+          format: int32
+        side:
+          type: string
+        amountMinor:
+          pattern: "[1-9][0-9]{0,37}"
+          type: string
+        memo:
+          type: string
+      additionalProperties: false
+    GlPostingRequest:
+      required:
+      - actionId
+      - businessDate
+      - description
+      - entries
+      - expectedBookVersion
+      - expectedPeriodVersion
+      - mappingDigest
+      - mappingId
+      - mappingVersion
+      - notAfterEpochMillis
+      - periodId
+      - source
+      - sourceOccurrenceEpochMillis
+      type: object
+      properties:
+        actionId:
+          type: string
+        periodId:
+          type: string
+        expectedBookVersion:
+          type: integer
+          format: int64
+        expectedPeriodVersion:
+          type: integer
+          format: int64
+        notAfterEpochMillis:
+          type: integer
+          format: int64
+        businessDate:
+          type: string
+        sourceOccurrenceEpochMillis:
+          type: integer
+          format: int64
+        source:
+          $ref: "#/components/schemas/GlSourceReference"
+        mappingId:
+          type: string
+        mappingVersion:
+          type: integer
+          format: int64
+        mappingDigest:
+          type: string
+        description:
+          type: string
+        entries:
+          type: array
+          items:
+            $ref: "#/components/schemas/GlPostingEntry"
+      additionalProperties: false
+    GlSourceReference:
+      required:
+      - digest
+      - effectOrdinal
+      - effectReference
+      - eventKind
+      - financialReceiptReference
+      - objectReference
+      - observedAtEpochMillis
+      - owner
+      - provenanceReference
+      - revision
+      type: object
+      properties:
+        owner:
+          type: string
+        objectReference:
+          type: string
+        effectReference:
+          type: string
+        revision:
+          type: integer
+          format: int64
+        digest:
+          type: string
+        eventKind:
+          type: string
+        effectOrdinal:
+          type: integer
+          format: int32
+        financialReceiptReference:
+          type: string
+        provenanceReference:
+          type: string
+        observedAtEpochMillis:
+          type: integer
+          format: int64
+      additionalProperties: false
+    GlPostingReceipt:
+      required:
+      - actionId
+      - intentDigest
+      - journalSequence
+      - postingId
+      - receiptId
+      - recordedAt
+      - recovered
+      type: object
+      properties:
+        receiptId:
+          type: string
+          format: uuid
+        actionId:
+          type: string
+          format: uuid
+        postingId:
+          type: string
+          format: uuid
+        journalSequence:
+          type: integer
+          format: int64
+        intentDigest:
+          type: string
+        recovered:
+          type: boolean
+        recordedAt:
+          type: string
+          format: date-time
+      additionalProperties: false
+    GlPostingErrorResponse:
+      required:
+      - code
+      - status
+      type: object
+      properties:
+        status:
+          type: integer
+          format: int32
+        code:
+          type: string
+          enum:
+          - GL_POSTING_REQUEST_FAILED
+          - GL_POSTING_COMMIT_KNOWN_RECOVERY_REQUIRED
+          - GL_POSTING_OUTCOME_UNCERTAIN_RECOVERY_REQUIRED
+        actionReference:
+          type: string
+          description: Original action reference when explicitly supplied by the owner;
+            never a new action
+          format: uuid
+          nullable: true
+      additionalProperties: false
+    GlFinancialApprovalTransitionRequest:
+      required:
+      - commandId
+      - expectedRevision
+      type: object
+      properties:
+        commandId:
+          type: string
+          format: uuid
+        expectedRevision:
+          type: integer
+          format: int64
+      additionalProperties: false
+    GlFinancialApprovalReceipt:
+      required:
+      - approvalId
+      - lastCommandId
+      - revision
+      - state
+      type: object
+      properties:
+        approvalId:
+          type: string
+          format: uuid
+        state:
+          type: string
+          enum:
+          - REQUESTED
+          - APPROVED
+          - REVOKED
+        revision:
+          type: integer
+          format: int64
+        approvedUntilEpochMillis:
+          type: integer
+          format: int64
+        lastCommandId:
+          type: string
+          format: uuid
+      additionalProperties: false
+    GlFinancialApprovalCheckRequest:
+      required:
+      - commandId
+      - expectedIntentDigest
+      - expectedRevision
+      - expectedSnapshotId
+      - expectedSnapshotSha256
+      type: object
+      properties:
+        commandId:
+          type: string
+          format: uuid
+        expectedRevision:
+          type: integer
+          format: int64
+        expectedSnapshotId:
+          type: string
+          format: uuid
+        expectedSnapshotSha256:
+          type: string
+        expectedIntentDigest:
+          type: string
+      additionalProperties: false
+    AccountBinding:
+      type: object
+      properties:
+        ledger:
+          $ref: "#/components/schemas/LedgerAccountReference"
+        leaf:
+          $ref: "#/components/schemas/PostingLeaf"
+    ControlReference:
+      type: object
+      properties:
+        accountId:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          format: int64
+    CurrencyCrosswalk:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          format: int64
+        digest:
+          type: string
+        ledgerPolicy:
+          type: string
+        scale:
+          type: integer
+          format: int32
+        masters:
+          $ref: "#/components/schemas/GlCurrencyReference"
+        admissionId:
+          type: string
+          format: uuid
+        admissionVersion:
+          type: integer
+          format: int64
+    GlFinancialApprovalRequest:
+      required:
+      - businessUntilEpochMillis
+      - commandId
+      - mappingSnapshot
+      - originalPosting
+      type: object
+      properties:
+        commandId:
+          type: string
+          format: uuid
+        businessUntilEpochMillis:
+          type: integer
+          format: int64
+        originalPosting:
+          $ref: "#/components/schemas/GlPostingRequest"
+        mappingSnapshot:
+          $ref: "#/components/schemas/MappingSnapshot"
+      additionalProperties: false
+    LedgerAccountReference:
+      type: object
+      properties:
+        accountId:
+          type: string
+          format: uuid
+        enrollmentId:
+          type: string
+          format: uuid
+        contractId:
+          type: string
+          format: uuid
+    MappingReference:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          format: int64
+        digest:
+          type: string
+        purpose:
+          type: string
+          enum:
+          - INTERNAL_CUSTOMER_TRANSFER
+    MappingSnapshot:
+      type: object
+      properties:
+        tenant:
+          type: string
+        bookId:
+          type: string
+          format: uuid
+        reference:
+          $ref: "#/components/schemas/MappingReference"
+        source:
+          $ref: "#/components/schemas/AccountBinding"
+        destination:
+          $ref: "#/components/schemas/AccountBinding"
+        currency:
+          $ref: "#/components/schemas/CurrencyCrosswalk"
+    PostingLeaf:
+      type: object
+      properties:
+        tenant:
+          type: string
+        bookId:
+          type: string
+          format: uuid
+        accountId:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          format: int64
+        role:
+          type: string
+        sourceType:
+          type: string
+        controlAncestors:
+          type: array
+          items:
+            $ref: "#/components/schemas/ControlReference"
+    GlFinancialApprovalDetail:
+      required:
+      - approval
+      - businessUntilEpochMillis
+      - intentDigest
+      - mappingSnapshot
+      - originalPosting
+      - originalPostingJson
+      - snapshotFormat
+      - snapshotId
+      - snapshotSha256
+      type: object
+      properties:
+        approval:
+          $ref: "#/components/schemas/GlFinancialApprovalReceipt"
+        businessUntilEpochMillis:
+          type: integer
+          format: int64
+        originalPosting:
+          $ref: "#/components/schemas/GlPostingRequest"
+        originalPostingJson:
+          type: string
+        intentDigest:
+          type: string
+        snapshotId:
+          type: string
+          format: uuid
+        snapshotFormat:
+          type: string
+        mappingSnapshot:
+          $ref: "#/components/schemas/MappingSnapshot"
+        snapshotSha256:
+          type: string
+      additionalProperties: false
     PaginationResponseJournalBatchDTO:
       type: object
       properties:
@@ -1214,3 +2086,8 @@ components:
           format: int32
       description: Represents a paginated response containing a list of items and
         pagination metadata.
+  securitySchemes:
+    glBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

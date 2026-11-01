@@ -32,6 +32,11 @@
             <artifactId>core-banking-ledger-interfaces</artifactId>
             <version>26.10.6</version>
         </dependency>
+        <dependency>
+            <groupId>io.fireflysoftware</groupId>
+            <artifactId>core-banking-ledger-sdk</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- Common Libraries -->
         <dependency>

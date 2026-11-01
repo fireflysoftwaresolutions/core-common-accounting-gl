@@ -16,13 +16,15 @@
 
 package io.fireflysoftware.core.accounting.intefaces.dtos.posting;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.UUID;
 
+@Schema(additionalProperties = Schema.AdditionalPropertiesValue.FALSE)
 public record GlPostingReceipt(
-        UUID receiptId,
-        UUID actionId,
-        UUID postingId,
-        long journalSequence,
-        String intentDigest,
-        boolean recovered,
-        java.time.Instant recordedAt) {}
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED) UUID receiptId,
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED) UUID actionId,
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED) UUID postingId,
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED) long journalSequence,
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED) String intentDigest,
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED) boolean recovered,
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED) java.time.Instant recordedAt) {}
