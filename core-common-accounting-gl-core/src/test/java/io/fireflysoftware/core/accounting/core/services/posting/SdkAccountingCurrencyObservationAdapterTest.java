@@ -43,7 +43,7 @@ class SdkAccountingCurrencyObservationAdapterTest {
     final AtomicReference<String> body = new AtomicReference<>();
     final AtomicInteger requests = new AtomicInteger();
     HttpServer server;
-    SdkAccountingCurrencyObservationAdapter adapter;
+    SdkAccountingCurrencyObservationAdapterImpl adapter;
 
     @BeforeEach
     void start() throws Exception {
@@ -67,7 +67,7 @@ class SdkAccountingCurrencyObservationAdapterTest {
         var beans = new DefaultListableBeanFactory();
         beans.registerSingleton("configuredCurrencySdk", new CurrencyExecutionPoliciesApi(client));
         adapter =
-                new SdkAccountingCurrencyObservationAdapter(
+                new SdkAccountingCurrencyObservationAdapterImpl(
                         beans.getBeanProvider(CurrencyExecutionPoliciesApi.class),
                         new org.springframework.mock.env.MockEnvironment()
                                 .withProperty(
@@ -233,7 +233,7 @@ class SdkAccountingCurrencyObservationAdapterTest {
     void unconfiguredSdkFailsClosedAndDoesNotPerformNetworkRequests() {
         var beans = new DefaultListableBeanFactory();
         var missing =
-                new SdkAccountingCurrencyObservationAdapter(
+                new SdkAccountingCurrencyObservationAdapterImpl(
                         beans.getBeanProvider(CurrencyExecutionPoliciesApi.class));
         assertThatThrownBy(
                         () ->
@@ -282,7 +282,7 @@ class SdkAccountingCurrencyObservationAdapterTest {
                         new ApiClient()
                                 .setBasePath("http://127.0.0.1:" + server.getAddress().getPort())));
         adapter =
-                new SdkAccountingCurrencyObservationAdapter(
+                new SdkAccountingCurrencyObservationAdapterImpl(
                         beans.getBeanProvider(CurrencyExecutionPoliciesApi.class));
         denied(wire.reference, 503);
         assertThat(requests).hasValue(0);

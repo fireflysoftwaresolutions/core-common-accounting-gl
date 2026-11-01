@@ -2,7 +2,7 @@
 package io.fireflysoftware.core.accounting.core.config.posting;
 
 import io.fireflysoftware.core.accounting.core.services.posting.*;
-import io.fireflysoftware.core.accounting.core.services.posting.impl.SdkOrganizationBankOwnerObservationAdapter;
+import io.fireflysoftware.core.accounting.core.services.posting.impl.SdkOrganizationBankOwnerObservationAdapterImpl;
 import io.fireflysoftware.core.org.sdk.invoker.ApiClient;
 import org.fireflyframework.security.spi.PolicyDecisionPort;
 import org.fireflyframework.security.spi.SecurityContextPort;
@@ -41,7 +41,7 @@ public class GlBankOwnerObservationConfiguration {
             if (decoders.put(profile.registrationId(), decoder) != null)
                 throw new IllegalArgumentException("Unique Bank observer registration required");
         }
-        return new SdkOrganizationBankOwnerObservationAdapter(contexts, policies, clients, registrations, profiles,
+        return new SdkOrganizationBankOwnerObservationAdapterImpl(contexts, policies, clients, registrations, profiles,
                 decoders, new ApiClient().getWebClient(), Clock.systemUTC(), System::nanoTime);
     }
 }

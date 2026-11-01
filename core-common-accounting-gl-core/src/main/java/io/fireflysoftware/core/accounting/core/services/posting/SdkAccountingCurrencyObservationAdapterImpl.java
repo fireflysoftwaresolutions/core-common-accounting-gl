@@ -39,8 +39,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Set;
 
-@Component
-public final class SdkAccountingCurrencyObservationAdapter
+@Component("sdkAccountingCurrencyObservationAdapter")
+public final class SdkAccountingCurrencyObservationAdapterImpl
         implements AccountingCurrencyObservationPort {
     private static final String POLICY_ENCODING = "MASTERS_CURRENCY_POLICY_V1";
     private static final String SOURCE_ENCODING = "MASTERS_CURRENCY_SOURCE_V1";
@@ -71,13 +71,13 @@ public final class SdkAccountingCurrencyObservationAdapter
     private final ObjectProvider<CurrencyExecutionPoliciesApi> clients;
     private final Environment environment;
 
-    public SdkAccountingCurrencyObservationAdapter(
+    public SdkAccountingCurrencyObservationAdapterImpl(
             ObjectProvider<CurrencyExecutionPoliciesApi> clients) {
         this(clients, new StandardEnvironment());
     }
 
     @Autowired
-    public SdkAccountingCurrencyObservationAdapter(
+    public SdkAccountingCurrencyObservationAdapterImpl(
             ObjectProvider<CurrencyExecutionPoliciesApi> clients, Environment environment) {
         this.clients = clients;
         this.environment = environment;

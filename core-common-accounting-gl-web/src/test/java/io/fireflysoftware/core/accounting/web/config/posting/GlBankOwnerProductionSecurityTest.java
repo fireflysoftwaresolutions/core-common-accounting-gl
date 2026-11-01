@@ -3,7 +3,7 @@ package io.fireflysoftware.core.accounting.web.config.posting;
 
 import io.fireflysoftware.core.accounting.core.config.posting.GlBankOwnerObservationConfiguration;
 import io.fireflysoftware.core.accounting.core.services.posting.GlBankOwnerObservationPort;
-import io.fireflysoftware.core.accounting.core.services.posting.impl.SdkOrganizationBankOwnerObservationAdapter;
+import io.fireflysoftware.core.accounting.core.services.posting.impl.SdkOrganizationBankOwnerObservationAdapterImpl;
 import org.fireflyframework.security.spi.PolicyDecisionPort;
 import org.fireflyframework.security.spi.SecurityContextPort;
 import org.junit.jupiter.api.Test;
@@ -174,7 +174,7 @@ class GlBankOwnerProductionSecurityTest {
         runner().withPropertyValues(profile(true, true)).run(context -> {
             assertThat(context).hasNotFailed().hasSingleBean(GlBankOwnerObservationPort.class)
                     .hasSingleBean(ReactiveOAuth2AuthorizedClientManager.class).hasSingleBean(ReactiveClientRegistrationRepository.class);
-            assertInstanceOf(SdkOrganizationBankOwnerObservationAdapter.class, context.getBean(GlBankOwnerObservationPort.class));
+            assertInstanceOf(SdkOrganizationBankOwnerObservationAdapterImpl.class, context.getBean(GlBankOwnerObservationPort.class));
             assertEquals("org.springframework.security.oauth2.client.AuthorizedClientServiceReactiveOAuth2AuthorizedClientManager",
                     context.getBean(ReactiveOAuth2AuthorizedClientManager.class).getClass().getName());
             assertEquals("org.fireflyframework.security.adapter.opa.OpaPolicyDecisionAdapter", context.getBean(PolicyDecisionPort.class).getClass().getName());

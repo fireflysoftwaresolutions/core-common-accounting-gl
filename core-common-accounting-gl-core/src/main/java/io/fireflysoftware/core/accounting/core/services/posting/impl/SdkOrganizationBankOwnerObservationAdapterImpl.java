@@ -21,7 +21,7 @@ import java.time.*;
 import java.util.*;
 import java.util.function.LongSupplier;
 
-public final class SdkOrganizationBankOwnerObservationAdapter implements GlBankOwnerObservationPort {
+public final class SdkOrganizationBankOwnerObservationAdapterImpl implements GlBankOwnerObservationPort {
     private static final Duration MAXIMUM = Duration.ofSeconds(10);
     private final SecurityContextPort contexts;
     private final PolicyDecisionPort policies;
@@ -33,7 +33,7 @@ public final class SdkOrganizationBankOwnerObservationAdapter implements GlBankO
     private final Clock clock;
     private final LongSupplier nanos;
 
-    public SdkOrganizationBankOwnerObservationAdapter(SecurityContextPort contexts, PolicyDecisionPort policies,
+    public SdkOrganizationBankOwnerObservationAdapterImpl(SecurityContextPort contexts, PolicyDecisionPort policies,
             ReactiveOAuth2AuthorizedClientManager clients, ReactiveClientRegistrationRepository registrations,
             List<GlBankOwnerObserverProfile> profiles, Map<String, ReactiveJwtDecoder> decoders,
             WebClient transport, Clock clock, LongSupplier nanos) {
@@ -58,7 +58,7 @@ public final class SdkOrganizationBankOwnerObservationAdapter implements GlBankO
             long before = nanos.getAsLong();
             Instant started = clock.instant();
             var profile = profiles.stream().filter(value -> value.scope().equals(expected.scope())).findFirst()
-                    .orElseThrow(SdkOrganizationBankOwnerObservationAdapter::forbidden);
+                    .orElseThrow(SdkOrganizationBankOwnerObservationAdapterImpl::forbidden);
             var initial = budget(started, started.plus(MAXIMUM), before);
             return contexts.currentPrincipal().switchIfEmpty(Mono.error(forbidden()))
                     .flatMap(actor -> {

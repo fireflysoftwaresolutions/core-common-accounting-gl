@@ -1,7 +1,7 @@
 /* Copyright 2026 Firefly Software Foundation. Licensed under the Apache License, Version 2.0. */
 package io.fireflysoftware.core.accounting.core.services.posting;
 
-import io.fireflysoftware.core.accounting.core.services.posting.impl.SdkOrganizationBankOwnerObservationAdapter;
+import io.fireflysoftware.core.accounting.core.services.posting.impl.SdkOrganizationBankOwnerObservationAdapterImpl;
 import org.fireflyframework.security.api.domain.*;
 import org.fireflyframework.security.spi.*;
 import org.junit.jupiter.api.Test;
@@ -52,7 +52,7 @@ class GlBankOwnerSdkAdapterTest {
         return new Jwt("controlled-token", clock.instant().minusSeconds(1), (Instant) claims.get("exp"), Map.of("alg", "RS256"), claims);
     }
 
-    SdkOrganizationBankOwnerObservationAdapter adapter() {
+    SdkOrganizationBankOwnerObservationAdapterImpl adapter() {
         ReactiveOAuth2AuthorizedClientManager manager = request -> {
             acquisitions.incrementAndGet(); acquisition.set(request);
             if (mode.get().equals("acquisition-budget")) nanos.addAndGet(Duration.ofSeconds(11).toNanos());
@@ -84,7 +84,7 @@ class GlBankOwnerSdkAdapterTest {
                         .body(BankOwnerMockResponse.JSON.writeValueAsString(fixture.response())).build());
             } catch (Exception error) { return Mono.error(error); }
         }).build();
-        return new SdkOrganizationBankOwnerObservationAdapter(() -> Mono.just(principal.get()), policy, manager,
+        return new SdkOrganizationBankOwnerObservationAdapterImpl(() -> Mono.just(principal.get()), policy, manager,
                 id -> Mono.just(registration), List.of(profile), Map.of("bank-observer", raw -> Mono.just(token.get())), web, clock, nanos::get);
     }
 
