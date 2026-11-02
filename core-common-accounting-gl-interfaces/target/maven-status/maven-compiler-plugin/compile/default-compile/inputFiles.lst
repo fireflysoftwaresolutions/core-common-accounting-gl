@@ -1,7 +1,0 @@
-/Users/casanchez/Desktop/FIREFLY-OSS/core-common-accounting-gl/core-common-accounting-gl-interfaces/src/main/java/com/firefly/core/accounting/intefaces/dtos/account/v1/GlAccountDTO.java
-/Users/casanchez/Desktop/FIREFLY-OSS/core-common-accounting-gl/core-common-accounting-gl-interfaces/src/main/java/com/firefly/core/accounting/intefaces/dtos/journal/v1/JournalBatchDTO.java
-/Users/casanchez/Desktop/FIREFLY-OSS/core-common-accounting-gl/core-common-accounting-gl-interfaces/src/main/java/com/firefly/core/accounting/intefaces/dtos/journal/v1/JournalEntryDTO.java
-/Users/casanchez/Desktop/FIREFLY-OSS/core-common-accounting-gl/core-common-accounting-gl-interfaces/src/main/java/com/firefly/core/accounting/intefaces/dtos/journal/v1/JournalLineDTO.java
-/Users/casanchez/Desktop/FIREFLY-OSS/core-common-accounting-gl/core-common-accounting-gl-interfaces/src/main/java/com/firefly/core/accounting/intefaces/enums/account/v1/GlAccountTypeEnum.java
-/Users/casanchez/Desktop/FIREFLY-OSS/core-common-accounting-gl/core-common-accounting-gl-interfaces/src/main/java/com/firefly/core/accounting/intefaces/enums/journal/v1/JournalBatchStatusEnum.java
-/Users/casanchez/Desktop/FIREFLY-OSS/core-common-accounting-gl/core-common-accounting-gl-interfaces/src/main/java/com/firefly/core/accounting/intefaces/enums/journal/v1/JournalLineDrCrEnum.java

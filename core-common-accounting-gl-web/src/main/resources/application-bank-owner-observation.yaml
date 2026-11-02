@@ -1,0 +1,52 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          gl-bank-owner:
+            provider: organization-owner
+            client-id: ${GL_OWNER_CLIENT_ID}
+            client-secret: ${GL_OWNER_CLIENT_SECRET}
+            authorization-grant-type: client_credentials
+            client-authentication-method: client_secret_basic
+        provider:
+          organization-owner:
+            token-uri: ${GL_OWNER_TOKEN_URI}
+
+firefly:
+  security:
+    resource-server:
+      strict-policy: true
+      issuer: ${GL_AUTH_ISSUER}
+      jwk-set-uri: ${GL_AUTH_JWKS_URI}
+      audiences: ${GL_AUTH_AUDIENCE}
+      tenant-claim-paths: ${GL_AUTH_TENANT_CLAIM:tenant_id}
+      tenant-required: true
+  accounting:
+    bank-owner-observation:
+      enabled: true
+      policy:
+        base-uri: ${GL_BANK_OWNER_POLICY_BASE_URI}
+        decision-path: ${GL_BANK_OWNER_POLICY_DECISION_PATH}
+      profiles:
+        - scope:
+            tenant-id: ${GL_OWNER_TENANT_ID}
+            bank-id: ${GL_OWNER_BANK_ID}
+            enrollment-id: ${GL_OWNER_ENROLLMENT_ID}
+            version: ${GL_OWNER_ENROLLMENT_VERSION}
+            institution-id: ${GL_OWNER_INSTITUTION_ID}
+            issuer-authority-id: ${GL_OWNER_ISSUER_AUTHORITY_ID}
+          registration-id: gl-bank-owner
+          platform-tenant-id: ${GL_OWNER_PLATFORM_TENANT_ID}
+          base-uri: ${GL_OWNER_BASE_URI}
+          token-uri: ${GL_OWNER_TOKEN_URI}
+          jwks-uri: ${GL_OWNER_JWKS_URI}
+          issuer: ${GL_OWNER_ISSUER}
+          audience: ${GL_OWNER_AUDIENCE}
+          subject: ${GL_OWNER_SUBJECT}
+          client-id: ${GL_OWNER_CLIENT_ID}
+          tenant-claim: ${GL_OWNER_TENANT_CLAIM:tenant_id}
+          kind-claim: ${GL_OWNER_KIND_CLAIM:principal_kind}
+          machine-value: ${GL_OWNER_MACHINE_VALUE:MACHINE}
+          client-claim: ${GL_OWNER_CLIENT_CLAIM:client_id}
+          staff-claim: ${GL_OWNER_STAFF_CLAIM:staff_actor_id}

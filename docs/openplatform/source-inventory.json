@@ -1,0 +1,1068 @@
+{
+  "adapters": [],
+  "ci_jdks": [
+    "25",
+    "25"
+  ],
+  "conditions": [],
+  "config_files": [
+    "core-common-accounting-gl-sdk/src/main/resources/api-spec/openapi.yml",
+    "core-common-accounting-gl-sdk/src/main/resources/openapi.yml",
+    "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/GeneralLedgerApplication.java",
+    "core-common-accounting-gl-web/src/main/resources/application.yaml"
+  ],
+  "docs": [],
+  "editorial_sha256": "57527532636738b063d451a73e16da0977ffe08dd1ed3073533ccb905fb82205",
+  "errors": [
+    {
+      "evidence": "new IllegalArgumentException(\"No account found with ID: \" + id)));",
+      "path": "core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/account/v1/GlAccountServiceImpl.java"
+    },
+    {
+      "evidence": "new IllegalArgumentException(\"No account found with ID: \" + id)))",
+      "path": "core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/account/v1/GlAccountServiceImpl.java"
+    },
+    {
+      "evidence": "new IllegalArgumentException(\"No account found with ID: \" + id)))",
+      "path": "core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/account/v1/GlAccountServiceImpl.java"
+    },
+    {
+      "evidence": "new IllegalArgumentException(\"No journal batch found with ID: \" + id)));",
+      "path": "core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalBatchServiceImpl.java"
+    },
+    {
+      "evidence": "new IllegalArgumentException(\"No journal batch found with ID: \" + id)));",
+      "path": "core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalBatchServiceImpl.java"
+    },
+    {
+      "evidence": "new IllegalArgumentException(\"No journal batch found with ID: \" + id)))",
+      "path": "core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalBatchServiceImpl.java"
+    },
+    {
+      "evidence": "new IllegalArgumentException(\"No journal entry found with ID: \" + entryId)));",
+      "path": "core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalEntryServiceImpl.java"
+    },
+    {
+      "evidence": "new IllegalArgumentException(\"No journal entry found with ID: \" + entryId)));",
+      "path": "core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalEntryServiceImpl.java"
+    },
+    {
+      "evidence": "new IllegalArgumentException(\"No journal entry found with ID: \" + entryId)))",
+      "path": "core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalEntryServiceImpl.java"
+    },
+    {
+      "evidence": "new IllegalArgumentException(\"No journal line found with ID: \" + lineId)));",
+      "path": "core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalLineServiceImpl.java"
+    },
+    {
+      "evidence": "new IllegalArgumentException(\"No journal line found with ID: \" + lineId)))",
+      "path": "core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalLineServiceImpl.java"
+    },
+    {
+      "evidence": "new IllegalArgumentException(\"No journal line found with ID: \" + lineId)))",
+      "path": "core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalLineServiceImpl.java"
+    }
+  ],
+  "files": {
+    ".github/workflows/maven-central.yml": "7ef505efdbf020fb08d674fbba6fbac34de3b05711c8fc39e88075bef5fe5d1e",
+    ".github/workflows/release.yml": "e52332c5406128a5209cf689a58d28f051c5e3e2ecf0f5d48bd673259871e698",
+    "LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "core-common-accounting-gl-core/pom.xml": "a274b7b1fef5b975cb92f34e907e21e31905a485c8a962b7af76ed4c8ae799ed",
+    "core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/mappers/account/v1/GlAccountMapper.java": "044b574041ce9462ce595b2f5e2c8f6501f1dd8485e9c128041a27586c9e7550",
+    "core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/mappers/journal/v1/JournalBatchMapper.java": "69e7f2b4317dcdd11e6f03a4cab8af33c3faebafe25e09c9ea628902cffc7dd6",
+    "core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/mappers/journal/v1/JournalEntryMapper.java": "6a6e1931a656117882e67358f30d6caea36c5cb299873060d3fde1d45b60ea97",
+    "core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/mappers/journal/v1/JournalLineMapper.java": "1baaeb8ea4ee6d1b35ac3e4cafc04340805e0969b1499ef985218b02385162a8",
+    "core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/account/v1/GlAccountService.java": "fc8649f310ef153579cce5c61bba210da9114328037d59503a8c10237f819f07",
+    "core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/account/v1/GlAccountServiceImpl.java": "e5c02f1f69b286e03296b0ead73c07aeb3566bbf3e9f590d25b2fc848d24ecd7",
+    "core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalBatchService.java": "aa8ede8daf62edd77b97252aad0425cd1cfb38bc5447c27f5d235842e96e9fc5",
+    "core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalBatchServiceImpl.java": "05711b1b9b753bab205af40c4130079421766dda5fe5ff42805bb8ee69e0b8e3",
+    "core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalEntryService.java": "add1fd887a4ca7a80512e9a5f006c210cbed7664300f59cdb9179d225138964b",
+    "core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalEntryServiceImpl.java": "243e2e2761e680880aadd9405ebb3561bb81b9ee387f6ed10df7b6b1a6f91119",
+    "core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalLineService.java": "1320094680219b4728ffb89d8189557792f46c38182a92c6182c8dea9448020e",
+    "core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalLineServiceImpl.java": "276b6320fc1dc7e4b7484ae41453a8cce33b59f24bf574eb34e1b5a101675324",
+    "core-common-accounting-gl-interfaces/pom.xml": "20c56fb6db5e97077da89e555f3531d3d6f941b2f35a804a1b2531ba6b135032",
+    "core-common-accounting-gl-interfaces/src/main/java/io/fireflysoftware/core/accounting/intefaces/dtos/account/v1/GlAccountDTO.java": "d5d97b507f2eb5e752972229c08f84f62c907e56452c616e6ac8b8e2a7a96c25",
+    "core-common-accounting-gl-interfaces/src/main/java/io/fireflysoftware/core/accounting/intefaces/dtos/journal/v1/JournalBatchDTO.java": "ab8f95202fe8a044b6c23cd914ecc176d971e2b418e7d1fabf2b3a90f7153a4f",
+    "core-common-accounting-gl-interfaces/src/main/java/io/fireflysoftware/core/accounting/intefaces/dtos/journal/v1/JournalEntryDTO.java": "317b974cf8c16d7f66a6ddbc3c066c8e2e0006e699fc992511668ebce6ce1d5b",
+    "core-common-accounting-gl-interfaces/src/main/java/io/fireflysoftware/core/accounting/intefaces/dtos/journal/v1/JournalLineDTO.java": "f22c313d95ffa652dcd273a431b9121622812f0b064287aa8ae3e58206c470c0",
+    "core-common-accounting-gl-interfaces/src/main/java/io/fireflysoftware/core/accounting/intefaces/enums/account/v1/GlAccountTypeEnum.java": "aa9bed96c4290576d098c8406927eddfc439fa6fec9bb7b01536f64b79c69c7b",
+    "core-common-accounting-gl-interfaces/src/main/java/io/fireflysoftware/core/accounting/intefaces/enums/journal/v1/JournalBatchStatusEnum.java": "356dcfaea0f16a3759535871cd1c164e6c4e616e5fb585ff50a3fac925cb2883",
+    "core-common-accounting-gl-interfaces/src/main/java/io/fireflysoftware/core/accounting/intefaces/enums/journal/v1/JournalLineDrCrEnum.java": "5599dbd04b953d2d79a9d93912449685af4f46a5db96c866eedee243ded303f7",
+    "core-common-accounting-gl-models/pom.xml": "b262c1c708bc6a4f3df9ef548dd0e427a79ff5777b2973fbd6850d443c9d38d5",
+    "core-common-accounting-gl-models/src/main/java/io/fireflysoftware/core/accounting/models/entities/account/v1/GlAccount.java": "b2351e8b9041060fca1528810deaf817bc9d4c90815ed02bc86f3246fceac271",
+    "core-common-accounting-gl-models/src/main/java/io/fireflysoftware/core/accounting/models/entities/journal/v1/JournalBatch.java": "8b6bc79d54e464d0a08eed75797f1313ffb8c038c6001ff699292ef1e59b8da3",
+    "core-common-accounting-gl-models/src/main/java/io/fireflysoftware/core/accounting/models/entities/journal/v1/JournalEntry.java": "29b1c5491cedcbc9413578fd9555e30352381d87c8c38ecd3bda7c30052ecaa4",
+    "core-common-accounting-gl-models/src/main/java/io/fireflysoftware/core/accounting/models/entities/journal/v1/JournalLine.java": "20cc7655bbbf334bbf9c78c9b451dbb83f45dbe8933ce94d039942b94b4c4f0f",
+    "core-common-accounting-gl-models/src/main/java/io/fireflysoftware/core/accounting/models/repositories/BaseRepository.java": "6fd399177baabce81a64311156849e328c096294c1b394d1f6b2b0ba940f064a",
+    "core-common-accounting-gl-models/src/main/java/io/fireflysoftware/core/accounting/models/repositories/account/v1/GlAccountRepository.java": "ab98a4db4b647a686c04e4e97a69a20dbbcb963a0b28c0f2a56243a70dc2e9c2",
+    "core-common-accounting-gl-models/src/main/java/io/fireflysoftware/core/accounting/models/repositories/journal/v1/JournalBatchRepository.java": "6f34c89c6be81ae060de53c0424979da568a126601989c44f1083441da1185f8",
+    "core-common-accounting-gl-models/src/main/java/io/fireflysoftware/core/accounting/models/repositories/journal/v1/JournalEntryRepository.java": "8f215b29bbd6beea778ad81fa6cc5bd3e54b16c34065d8fd02e4dfbd876da3fa",
+    "core-common-accounting-gl-models/src/main/java/io/fireflysoftware/core/accounting/models/repositories/journal/v1/JournalLineRepository.java": "ae753d102d2ae8c96a678d9b2088ea6f92eadf3c5dde01a002b65572fd1be744",
+    "core-common-accounting-gl-models/src/main/resources/db/migration/V1__Create_Enums.sql": "a77bacf75450d2b16e1258d30113cc398d2856995c6ea2652a985443e3c55a21",
+    "core-common-accounting-gl-models/src/main/resources/db/migration/V2__Create_Tables.sql": "196c4fd3571669cb319c1279acc5a9da7e0105495bda4cbd198fd4a86acf2bfc",
+    "core-common-accounting-gl-models/src/main/resources/db/migration/V3__Create_Casts.sql": "69e3f6619ad415fb4790d596aa96fb48b5ab6f9945d710ff009c833c4c2d913e",
+    "core-common-accounting-gl-sdk/pom.xml": "33747489dd3f8b6e24d1c8c5deb194ee73b9158d8f595349cbe3f281f3ffba10",
+    "core-common-accounting-gl-sdk/src/main/resources/api-spec/openapi.yml": "7c770c2d98a7b4f91ac8625982bd4f577178a4fb26bbe855ef6bf6136b752eb6",
+    "core-common-accounting-gl-sdk/src/main/resources/openapi.yml": "780be3257b142daa2a18818a1b5ad77420a6b7ff5c20039dfe43fc858e5b5724",
+    "core-common-accounting-gl-web/pom.xml": "a84e393808d3646da4622f794899285b2fe8d90016e81cff367fbbe670ebe958",
+    "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/GeneralLedgerApplication.java": "5501d4d3ed807e71d8615908708d2bdc1f52b8e622120f5b707ac7e70dfe9fd9",
+    "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/account/v1/GlAccountController.java": "13b869b6d91783c191ed66c4055b9f4a41fddad16c8d0c8f932ead942ae11624",
+    "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalBatchController.java": "4452b7af06828dd02971a064f1b0d21439d8d95abaf0b7c1de6ff2696d812255",
+    "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalEntryController.java": "d6b6141b9fb2466fb261110ad4bab9d79325804e7fa727459b6fd259a17ac596",
+    "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalLineController.java": "8c5e2623a3a9ea59555d750a2f64ca53a6c79823b202fb3e592823007320aecf",
+    "core-common-accounting-gl-web/src/main/resources/application.yaml": "c6d92d60b7358aafb5c67894227edf17df0800c1f15af8985fc1b87acb2c4c97",
+    "core-common-accounting-gl-web/src/test/java/io/fireflysoftware/core/accounting/web/openapi/OpenApiGenApplication.java": "f49ddb4d23f2db48ef8e30d11c4d96d9256e09aecd449425030a559984fbe0cc",
+    "pom.xml": "9742e4baeeb7ae1dd224ac621a247e973d891a2ce78962acd212ad2e2c99f411"
+  },
+  "migrations": [
+    "core-common-accounting-gl-models/src/main/resources/db/migration/V1__Create_Enums.sql",
+    "core-common-accounting-gl-models/src/main/resources/db/migration/V2__Create_Tables.sql",
+    "core-common-accounting-gl-models/src/main/resources/db/migration/V3__Create_Casts.sql"
+  ],
+  "modules": [
+    "core-common-accounting-gl-web",
+    "core-common-accounting-gl-interfaces",
+    "core-common-accounting-gl-models",
+    "core-common-accounting-gl-core",
+    "core-common-accounting-gl-sdk"
+  ],
+  "operations": [
+    {
+      "abstract": false,
+      "mapping": "\"/{id}\"",
+      "method": "getById",
+      "owner": "GlAccountController",
+      "path": "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/account/v1/GlAccountController.java",
+      "route": "/api/v1/gl-accounts/{id}",
+      "signature": "public Mono<ResponseEntity<GlAccountDTO>> getById(@PathVariable(\"id\") UUID id)",
+      "verb": "GET"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/\"",
+      "method": "search",
+      "owner": "GlAccountController",
+      "path": "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/account/v1/GlAccountController.java",
+      "route": "/api/v1/gl-accounts",
+      "signature": "public Mono<ResponseEntity<PaginationResponse<GlAccountDTO>>> search( @ParameterObject @ModelAttribute FilterRequest<GlAccountDTO> filterRequest)",
+      "verb": "GET"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/{parentId}/children\"",
+      "method": "findChildren",
+      "owner": "GlAccountController",
+      "path": "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/account/v1/GlAccountController.java",
+      "route": "/api/v1/gl-accounts/{parentId}/children",
+      "signature": "public Mono<ResponseEntity<PaginationResponse<GlAccountDTO>>> findChildren( @PathVariable(\"parentId\") UUID parentId, @ParameterObject @ModelAttribute FilterRequest<GlAccountDTO> filterRequest)",
+      "verb": "GET"
+    },
+    {
+      "abstract": false,
+      "mapping": "",
+      "method": "create",
+      "owner": "GlAccountController",
+      "path": "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/account/v1/GlAccountController.java",
+      "route": "/api/v1/gl-accounts",
+      "signature": "public Mono<ResponseEntity<GlAccountDTO>> create(@RequestBody GlAccountDTO dto)",
+      "verb": "POST"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/{parentId}/children\"",
+      "method": "createChild",
+      "owner": "GlAccountController",
+      "path": "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/account/v1/GlAccountController.java",
+      "route": "/api/v1/gl-accounts/{parentId}/children",
+      "signature": "public Mono<ResponseEntity<GlAccountDTO>> createChild(@PathVariable(\"parentId\") UUID parentId, @RequestBody GlAccountDTO dto)",
+      "verb": "POST"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/{id}\"",
+      "method": "update",
+      "owner": "GlAccountController",
+      "path": "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/account/v1/GlAccountController.java",
+      "route": "/api/v1/gl-accounts/{id}",
+      "signature": "public Mono<ResponseEntity<GlAccountDTO>> update(@PathVariable(\"id\") UUID id, @RequestBody GlAccountDTO dto)",
+      "verb": "PUT"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/{id}\"",
+      "method": "delete",
+      "owner": "GlAccountController",
+      "path": "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/account/v1/GlAccountController.java",
+      "route": "/api/v1/gl-accounts/{id}",
+      "signature": "public Mono<ResponseEntity<Void>> delete(@PathVariable(\"id\") UUID id)",
+      "verb": "DELETE"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/{id}\"",
+      "method": "getById",
+      "owner": "JournalBatchController",
+      "path": "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalBatchController.java",
+      "route": "/api/v1/journal-batches/{id}",
+      "signature": "public Mono<ResponseEntity<JournalBatchDTO>> getById(@PathVariable(\"id\") UUID id)",
+      "verb": "GET"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/\"",
+      "method": "search",
+      "owner": "JournalBatchController",
+      "path": "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalBatchController.java",
+      "route": "/api/v1/journal-batches",
+      "signature": "public Mono<ResponseEntity<PaginationResponse<JournalBatchDTO>>> search( @ParameterObject @ModelAttribute FilterRequest<JournalBatchDTO> filterRequest)",
+      "verb": "GET"
+    },
+    {
+      "abstract": false,
+      "mapping": "",
+      "method": "create",
+      "owner": "JournalBatchController",
+      "path": "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalBatchController.java",
+      "route": "/api/v1/journal-batches",
+      "signature": "public Mono<ResponseEntity<JournalBatchDTO>> create(@RequestBody JournalBatchDTO dto)",
+      "verb": "POST"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/{id}\"",
+      "method": "update",
+      "owner": "JournalBatchController",
+      "path": "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalBatchController.java",
+      "route": "/api/v1/journal-batches/{id}",
+      "signature": "public Mono<ResponseEntity<JournalBatchDTO>> update(@PathVariable(\"id\") UUID id, @RequestBody JournalBatchDTO dto)",
+      "verb": "PUT"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/{id}\"",
+      "method": "delete",
+      "owner": "JournalBatchController",
+      "path": "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalBatchController.java",
+      "route": "/api/v1/journal-batches/{id}",
+      "signature": "public Mono<ResponseEntity<Void>> delete(@PathVariable(\"id\") UUID id)",
+      "verb": "DELETE"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/{entryId}\"",
+      "method": "getById",
+      "owner": "JournalEntryController",
+      "path": "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalEntryController.java",
+      "route": "/api/v1/journal-batches/{batchId}/entries/{entryId}",
+      "signature": "public Mono<ResponseEntity<JournalEntryDTO>> getById(@PathVariable(\"batchId\") UUID batchId, @PathVariable(\"entryId\") UUID entryId)",
+      "verb": "GET"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/\"",
+      "method": "search",
+      "owner": "JournalEntryController",
+      "path": "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalEntryController.java",
+      "route": "/api/v1/journal-batches/{batchId}/entries",
+      "signature": "public Mono<ResponseEntity<PaginationResponse<JournalEntryDTO>>> search( @PathVariable(\"batchId\") UUID batchId, @ParameterObject @ModelAttribute FilterRequest<JournalEntryDTO> filterRequest)",
+      "verb": "GET"
+    },
+    {
+      "abstract": false,
+      "mapping": "",
+      "method": "create",
+      "owner": "JournalEntryController",
+      "path": "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalEntryController.java",
+      "route": "/api/v1/journal-batches/{batchId}/entries",
+      "signature": "public Mono<ResponseEntity<JournalEntryDTO>> create(@PathVariable(\"batchId\") UUID batchId, @RequestBody JournalEntryDTO dto)",
+      "verb": "POST"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/{entryId}\"",
+      "method": "update",
+      "owner": "JournalEntryController",
+      "path": "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalEntryController.java",
+      "route": "/api/v1/journal-batches/{batchId}/entries/{entryId}",
+      "signature": "public Mono<ResponseEntity<JournalEntryDTO>> update(@PathVariable(\"batchId\") UUID batchId, @PathVariable(\"entryId\") UUID entryId, @RequestBody JournalEntryDTO dto)",
+      "verb": "PUT"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/{entryId}\"",
+      "method": "delete",
+      "owner": "JournalEntryController",
+      "path": "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalEntryController.java",
+      "route": "/api/v1/journal-batches/{batchId}/entries/{entryId}",
+      "signature": "public Mono<ResponseEntity<Void>> delete(@PathVariable(\"batchId\") UUID batchId, @PathVariable(\"entryId\") UUID entryId)",
+      "verb": "DELETE"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/{lineId}\"",
+      "method": "getById",
+      "owner": "JournalLineController",
+      "path": "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalLineController.java",
+      "route": "/api/v1/journal-batches/{batchId}/entries/{entryId}/lines/{lineId}",
+      "signature": "public Mono<ResponseEntity<JournalLineDTO>> getById(@PathVariable(\"batchId\") UUID batchId, @PathVariable(\"entryId\") UUID entryId, @PathVariable(\"lineId\") UUID lineId)",
+      "verb": "GET"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/\"",
+      "method": "search",
+      "owner": "JournalLineController",
+      "path": "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalLineController.java",
+      "route": "/api/v1/journal-batches/{batchId}/entries/{entryId}/lines",
+      "signature": "public Mono<ResponseEntity<PaginationResponse<JournalLineDTO>>> search(@PathVariable(\"batchId\") UUID batchId, @PathVariable(\"entryId\") UUID entryId, @RequestBody FilterRequest<JournalLineDTO> filterRequest)",
+      "verb": "GET"
+    },
+    {
+      "abstract": false,
+      "mapping": "",
+      "method": "create",
+      "owner": "JournalLineController",
+      "path": "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalLineController.java",
+      "route": "/api/v1/journal-batches/{batchId}/entries/{entryId}/lines",
+      "signature": "public Mono<ResponseEntity<JournalLineDTO>> create(@PathVariable(\"batchId\") UUID batchId, @PathVariable(\"entryId\") UUID entryId, @RequestBody JournalLineDTO dto)",
+      "verb": "POST"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/{lineId}\"",
+      "method": "update",
+      "owner": "JournalLineController",
+      "path": "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalLineController.java",
+      "route": "/api/v1/journal-batches/{batchId}/entries/{entryId}/lines/{lineId}",
+      "signature": "public Mono<ResponseEntity<JournalLineDTO>> update(@PathVariable(\"batchId\") UUID batchId, @PathVariable(\"entryId\") UUID entryId, @PathVariable(\"lineId\") UUID lineId, @RequestBody JournalLineDTO dto)",
+      "verb": "PUT"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/{lineId}\"",
+      "method": "delete",
+      "owner": "JournalLineController",
+      "path": "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/controllers/journal/v1/JournalLineController.java",
+      "route": "/api/v1/journal-batches/{batchId}/entries/{entryId}/lines/{lineId}",
+      "signature": "public Mono<ResponseEntity<Void>> delete(@PathVariable(\"batchId\") UUID batchId, @PathVariable(\"entryId\") UUID entryId, @PathVariable(\"lineId\") UUID lineId)",
+      "verb": "DELETE"
+    }
+  ],
+  "poms": [
+    {
+      "artifact": "core-common-accounting-gl-core",
+      "dependencies": [
+        "io.fireflysoftware:core-common-accounting-gl-interfaces:",
+        "io.fireflysoftware:core-common-accounting-gl-models:",
+        "org.fireflyframework:fireflyframework-starter-core:",
+        "org.springframework.boot:spring-boot-starter-webflux:",
+        "org.mapstruct:mapstruct:",
+        "org.projectlombok:lombok:",
+        "org.springframework.boot:spring-boot-starter-test:",
+        "io.projectreactor:reactor-test:"
+      ],
+      "group": "io.fireflysoftware",
+      "java": "",
+      "parent": "io.fireflysoftware:core-common-accounting-gl:26.10.6",
+      "path": "core-common-accounting-gl-core/pom.xml",
+      "plugins": [
+        "maven-compiler-plugin"
+      ],
+      "version": "26.10.6"
+    },
+    {
+      "artifact": "core-common-accounting-gl-interfaces",
+      "dependencies": [
+        "org.fireflyframework:fireflyframework-utils:",
+        "org.springframework.boot:spring-boot-starter-validation:",
+        "org.fireflyframework:fireflyframework-validators:",
+        "io.swagger.core.v3:swagger-annotations:",
+        "org.projectlombok:lombok:",
+        "com.fasterxml.jackson.core:jackson-databind:",
+        "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:"
+      ],
+      "group": "io.fireflysoftware",
+      "java": "",
+      "parent": "io.fireflysoftware:core-common-accounting-gl:26.10.6",
+      "path": "core-common-accounting-gl-interfaces/pom.xml",
+      "plugins": [],
+      "version": "26.10.6"
+    },
+    {
+      "artifact": "core-common-accounting-gl-models",
+      "dependencies": [
+        "io.fireflysoftware:core-common-accounting-gl-interfaces:",
+        "org.fireflyframework:fireflyframework-r2dbc:",
+        "org.springframework.boot:spring-boot-starter-data-r2dbc:",
+        "org.postgresql:r2dbc-postgresql:",
+        "org.postgresql:postgresql:",
+        "org.flywaydb:flyway-core:",
+        "org.projectlombok:lombok:"
+      ],
+      "group": "io.fireflysoftware",
+      "java": "",
+      "parent": "io.fireflysoftware:core-common-accounting-gl:26.10.6",
+      "path": "core-common-accounting-gl-models/pom.xml",
+      "plugins": [],
+      "version": "26.10.6"
+    },
+    {
+      "artifact": "core-common-accounting-gl-sdk",
+      "dependencies": [
+        "io.fireflysoftware:core-common-accounting-gl-web:",
+        "io.swagger.core.v3:swagger-annotations:",
+        "com.fasterxml.jackson.core:jackson-databind:",
+        "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:",
+        "jakarta.annotation:jakarta.annotation-api:",
+        "org.projectlombok:lombok:",
+        "com.squareup.okhttp3:okhttp:",
+        "com.squareup.okhttp3:logging-interceptor:",
+        "org.openapitools:jackson-databind-nullable:0.2.8",
+        "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:",
+        "javax.annotation:javax.annotation-api:1.3.2",
+        "org.springframework:spring-webflux:"
+      ],
+      "group": "io.fireflysoftware",
+      "java": "",
+      "parent": "io.fireflysoftware:core-common-accounting-gl:26.10.6",
+      "path": "core-common-accounting-gl-sdk/pom.xml",
+      "plugins": [
+        "openapi-generator-maven-plugin"
+      ],
+      "version": "26.10.6"
+    },
+    {
+      "artifact": "core-common-accounting-gl-web",
+      "dependencies": [
+        "io.fireflysoftware:core-common-accounting-gl-core:",
+        "io.fireflysoftware:core-common-accounting-gl-interfaces:",
+        "org.fireflyframework:fireflyframework-web:",
+        "org.springframework.boot:spring-boot-starter-webflux:",
+        "org.springframework.boot:spring-boot-starter-actuator:",
+        "org.springframework.boot:spring-boot-starter-validation:",
+        "org.springdoc:springdoc-openapi-starter-webflux-ui:",
+        "io.micrometer:micrometer-registry-prometheus:",
+        "org.projectlombok:lombok:",
+        "org.springframework.boot:spring-boot-starter-test:",
+        "io.projectreactor:reactor-test:"
+      ],
+      "group": "io.fireflysoftware",
+      "java": "",
+      "parent": "io.fireflysoftware:core-common-accounting-gl:26.10.6",
+      "path": "core-common-accounting-gl-web/pom.xml",
+      "plugins": [
+        "maven-compiler-plugin",
+        "maven-resources-plugin",
+        "spring-boot-maven-plugin"
+      ],
+      "version": "26.10.6"
+    },
+    {
+      "artifact": "core-common-accounting-gl",
+      "dependencies": [
+        "io.fireflysoftware:core-common-accounting-gl-interfaces:${project.version}",
+        "io.fireflysoftware:core-common-accounting-gl-models:${project.version}",
+        "io.fireflysoftware:core-common-accounting-gl-core:${project.version}",
+        "io.fireflysoftware:core-common-accounting-gl-web:${project.version}",
+        "io.fireflysoftware:core-common-accounting-gl-sdk:${project.version}"
+      ],
+      "group": "io.fireflysoftware",
+      "java": "25",
+      "parent": "io.fireflysoftware:firefly-parent:26.10.6",
+      "path": "pom.xml",
+      "plugins": [],
+      "version": "26.10.6"
+    }
+  ],
+  "ports": [
+    {
+      "boundary": false,
+      "boundary_evidence": [],
+      "methods": [
+        "Mono<GlAccountDTO> create(GlAccountDTO dto)",
+        "Mono<GlAccountDTO> getById(UUID id)",
+        "Mono<GlAccountDTO> update(UUID id, GlAccountDTO dto)",
+        "Mono<Void> delete(UUID id)",
+        "Mono<PaginationResponse<GlAccountDTO>> search(FilterRequest<GlAccountDTO> filterRequest)",
+        "Mono<PaginationResponse<GlAccountDTO>> findChildren(UUID parentId, FilterRequest<GlAccountDTO> filterRequest)",
+        "Mono<GlAccountDTO> createChild(UUID parentId, GlAccountDTO dto)"
+      ],
+      "name": "GlAccountService",
+      "path": "core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/account/v1/GlAccountService.java"
+    },
+    {
+      "boundary": false,
+      "boundary_evidence": [],
+      "methods": [
+        "Mono<JournalBatchDTO> create(JournalBatchDTO dto)",
+        "Mono<JournalBatchDTO> getById(UUID id)",
+        "Mono<JournalBatchDTO> update(UUID id, JournalBatchDTO dto)",
+        "Mono<Void> delete(UUID id)",
+        "Mono<PaginationResponse<JournalBatchDTO>> search(FilterRequest<JournalBatchDTO> filterRequest)"
+      ],
+      "name": "JournalBatchService",
+      "path": "core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalBatchService.java"
+    },
+    {
+      "boundary": false,
+      "boundary_evidence": [],
+      "methods": [
+        "Mono<JournalEntryDTO> create(UUID batchId, JournalEntryDTO dto)",
+        "Mono<JournalEntryDTO> getById(UUID batchId, UUID entryId)",
+        "Mono<JournalEntryDTO> update(UUID batchId, UUID entryId, JournalEntryDTO dto)",
+        "Mono<Void> delete(UUID batchId, UUID entryId)",
+        "Mono<PaginationResponse<JournalEntryDTO>> search(UUID batchId, FilterRequest<JournalEntryDTO> filterRequest)"
+      ],
+      "name": "JournalEntryService",
+      "path": "core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalEntryService.java"
+    },
+    {
+      "boundary": false,
+      "boundary_evidence": [],
+      "methods": [
+        "Mono<JournalLineDTO> create(UUID batchId, UUID entryId, JournalLineDTO dto)",
+        "Mono<JournalLineDTO> getById(UUID batchId, UUID entryId, UUID lineId)",
+        "Mono<JournalLineDTO> update(UUID batchId, UUID entryId, UUID lineId, JournalLineDTO dto)",
+        "Mono<Void> delete(UUID batchId, UUID entryId, UUID lineId)",
+        "Mono<PaginationResponse<JournalLineDTO>> search(UUID batchId, UUID entryId, FilterRequest<JournalLineDTO> filterRequest)"
+      ],
+      "name": "JournalLineService",
+      "path": "core-common-accounting-gl-core/src/main/java/io/fireflysoftware/core/accounting/core/services/journal/v1/JournalLineService.java"
+    }
+  ],
+  "repository": "core-common-accounting-gl",
+  "routes": [],
+  "schema": 1,
+  "settings": [
+    {
+      "default": null,
+      "key": "spring.application.name",
+      "path": "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/GeneralLedgerApplication.java"
+    },
+    {
+      "default": null,
+      "key": "spring.application.version",
+      "path": "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/GeneralLedgerApplication.java"
+    },
+    {
+      "default": null,
+      "key": "spring.application.description",
+      "path": "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/GeneralLedgerApplication.java"
+    },
+    {
+      "default": null,
+      "key": "spring.application.team.name",
+      "path": "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/GeneralLedgerApplication.java"
+    },
+    {
+      "default": null,
+      "key": "spring.application.team.email",
+      "path": "core-common-accounting-gl-web/src/main/java/io/fireflysoftware/core/accounting/web/GeneralLedgerApplication.java"
+    },
+    {
+      "default": null,
+      "key": "DB_HOST",
+      "path": "core-common-accounting-gl-web/src/main/resources/application.yaml"
+    },
+    {
+      "default": null,
+      "key": "DB_PORT",
+      "path": "core-common-accounting-gl-web/src/main/resources/application.yaml"
+    },
+    {
+      "default": null,
+      "key": "DB_NAME",
+      "path": "core-common-accounting-gl-web/src/main/resources/application.yaml"
+    },
+    {
+      "default": null,
+      "key": "DB_SSL_MODE",
+      "path": "core-common-accounting-gl-web/src/main/resources/application.yaml"
+    },
+    {
+      "default": null,
+      "key": "DB_USERNAME",
+      "path": "core-common-accounting-gl-web/src/main/resources/application.yaml"
+    },
+    {
+      "default": null,
+      "key": "DB_PASSWORD",
+      "path": "core-common-accounting-gl-web/src/main/resources/application.yaml"
+    },
+    {
+      "default": "localhost",
+      "key": "SERVER_ADDRESS",
+      "path": "core-common-accounting-gl-web/src/main/resources/application.yaml"
+    },
+    {
+      "default": "8080",
+      "key": "SERVER_PORT",
+      "path": "core-common-accounting-gl-web/src/main/resources/application.yaml"
+    }
+  ],
+  "test_cases": [],
+  "tests": [
+    "core-common-accounting-gl-web/src/test/java/io/fireflysoftware/core/accounting/web/openapi/OpenApiGenApplication.java"
+  ],
+  "types": [
+    {
+      "constraints": [],
+      "fields": [
+        {
+          "constraints": [],
+          "name": "id",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "code",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "name",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "type",
+          "type": "GlAccountTypeEnum"
+        },
+        {
+          "constraints": [],
+          "name": "parentId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "isLeaf",
+          "type": "boolean"
+        },
+        {
+          "constraints": [],
+          "name": "active",
+          "type": "boolean"
+        },
+        {
+          "constraints": [],
+          "name": "currency",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "createdAt",
+          "type": "LocalDateTime"
+        },
+        {
+          "constraints": [],
+          "name": "updatedAt",
+          "type": "LocalDateTime"
+        }
+      ],
+      "name": "GlAccountDTO",
+      "path": "core-common-accounting-gl-interfaces/src/main/java/io/fireflysoftware/core/accounting/intefaces/dtos/account/v1/GlAccountDTO.java",
+      "persistent": false
+    },
+    {
+      "constraints": [],
+      "fields": [
+        {
+          "constraints": [],
+          "name": "id",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "reference",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "status",
+          "type": "JournalBatchStatusEnum"
+        },
+        {
+          "constraints": [],
+          "name": "batchDate",
+          "type": "LocalDate"
+        },
+        {
+          "constraints": [],
+          "name": "remarks",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "createdAt",
+          "type": "LocalDateTime"
+        },
+        {
+          "constraints": [],
+          "name": "updatedAt",
+          "type": "LocalDateTime"
+        }
+      ],
+      "name": "JournalBatchDTO",
+      "path": "core-common-accounting-gl-interfaces/src/main/java/io/fireflysoftware/core/accounting/intefaces/dtos/journal/v1/JournalBatchDTO.java",
+      "persistent": false
+    },
+    {
+      "constraints": [],
+      "fields": [
+        {
+          "constraints": [],
+          "name": "id",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "batchId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "transactionId",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "sourceModule",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "totalAmount",
+          "type": "BigDecimal"
+        },
+        {
+          "constraints": [],
+          "name": "description",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "entryDate",
+          "type": "LocalDateTime"
+        },
+        {
+          "constraints": [],
+          "name": "posted",
+          "type": "boolean"
+        },
+        {
+          "constraints": [],
+          "name": "createdBy",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "createdAt",
+          "type": "LocalDateTime"
+        },
+        {
+          "constraints": [],
+          "name": "updatedAt",
+          "type": "LocalDateTime"
+        }
+      ],
+      "name": "JournalEntryDTO",
+      "path": "core-common-accounting-gl-interfaces/src/main/java/io/fireflysoftware/core/accounting/intefaces/dtos/journal/v1/JournalEntryDTO.java",
+      "persistent": false
+    },
+    {
+      "constraints": [],
+      "fields": [
+        {
+          "constraints": [],
+          "name": "id",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "entryId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "accountId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "amount",
+          "type": "BigDecimal"
+        },
+        {
+          "constraints": [],
+          "name": "drCr",
+          "type": "JournalLineDrCrEnum"
+        },
+        {
+          "constraints": [],
+          "name": "memo",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "fxCurrency",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "fxRate",
+          "type": "BigDecimal"
+        },
+        {
+          "constraints": [],
+          "name": "createdBy",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "createdAt",
+          "type": "LocalDateTime"
+        },
+        {
+          "constraints": [],
+          "name": "updatedAt",
+          "type": "LocalDateTime"
+        }
+      ],
+      "name": "JournalLineDTO",
+      "path": "core-common-accounting-gl-interfaces/src/main/java/io/fireflysoftware/core/accounting/intefaces/dtos/journal/v1/JournalLineDTO.java",
+      "persistent": false
+    },
+    {
+      "constraints": [],
+      "fields": [
+        {
+          "constraints": [],
+          "name": "id",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "code",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "name",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "type",
+          "type": "GlAccountTypeEnum"
+        },
+        {
+          "constraints": [],
+          "name": "parentId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "isLeaf",
+          "type": "boolean"
+        },
+        {
+          "constraints": [],
+          "name": "active",
+          "type": "boolean"
+        },
+        {
+          "constraints": [],
+          "name": "currency",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "createdAt",
+          "type": "LocalDateTime"
+        },
+        {
+          "constraints": [],
+          "name": "updatedAt",
+          "type": "LocalDateTime"
+        }
+      ],
+      "name": "GlAccount",
+      "path": "core-common-accounting-gl-models/src/main/java/io/fireflysoftware/core/accounting/models/entities/account/v1/GlAccount.java",
+      "persistent": true
+    },
+    {
+      "constraints": [],
+      "fields": [
+        {
+          "constraints": [],
+          "name": "id",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "reference",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "status",
+          "type": "JournalBatchStatusEnum"
+        },
+        {
+          "constraints": [],
+          "name": "batchDate",
+          "type": "LocalDate"
+        },
+        {
+          "constraints": [],
+          "name": "remarks",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "createdAt",
+          "type": "LocalDateTime"
+        },
+        {
+          "constraints": [],
+          "name": "updatedAt",
+          "type": "LocalDateTime"
+        }
+      ],
+      "name": "JournalBatch",
+      "path": "core-common-accounting-gl-models/src/main/java/io/fireflysoftware/core/accounting/models/entities/journal/v1/JournalBatch.java",
+      "persistent": true
+    },
+    {
+      "constraints": [],
+      "fields": [
+        {
+          "constraints": [],
+          "name": "id",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "batchId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "transactionId",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "sourceModule",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "totalAmount",
+          "type": "BigDecimal"
+        },
+        {
+          "constraints": [],
+          "name": "description",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "entryDate",
+          "type": "LocalDateTime"
+        },
+        {
+          "constraints": [],
+          "name": "posted",
+          "type": "boolean"
+        },
+        {
+          "constraints": [],
+          "name": "createdBy",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "createdAt",
+          "type": "LocalDateTime"
+        },
+        {
+          "constraints": [],
+          "name": "updatedAt",
+          "type": "LocalDateTime"
+        }
+      ],
+      "name": "JournalEntry",
+      "path": "core-common-accounting-gl-models/src/main/java/io/fireflysoftware/core/accounting/models/entities/journal/v1/JournalEntry.java",
+      "persistent": true
+    },
+    {
+      "constraints": [],
+      "fields": [
+        {
+          "constraints": [],
+          "name": "id",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "entryId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "accountId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "amount",
+          "type": "BigDecimal"
+        },
+        {
+          "constraints": [],
+          "name": "drCr",
+          "type": "JournalLineDrCrEnum"
+        },
+        {
+          "constraints": [],
+          "name": "memo",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "fxCurrency",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "fxRate",
+          "type": "BigDecimal"
+        },
+        {
+          "constraints": [],
+          "name": "createdBy",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "createdAt",
+          "type": "LocalDateTime"
+        },
+        {
+          "constraints": [],
+          "name": "updatedAt",
+          "type": "LocalDateTime"
+        }
+      ],
+      "name": "JournalLine",
+      "path": "core-common-accounting-gl-models/src/main/java/io/fireflysoftware/core/accounting/models/entities/journal/v1/JournalLine.java",
+      "persistent": true
+    }
+  ],
+  "verification_hazards": [],
+  "workflows": [
+    ".github/workflows/maven-central.yml",
+    ".github/workflows/release.yml"
+  ]
+}

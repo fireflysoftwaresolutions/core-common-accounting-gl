@@ -1,9 +1,0 @@
-/Users/casanchez/Desktop/FIREFLY-OSS/core-common-accounting-gl/core-common-accounting-gl-models/src/main/java/com/firefly/core/accounting/models/entities/account/v1/GlAccount.java
-/Users/casanchez/Desktop/FIREFLY-OSS/core-common-accounting-gl/core-common-accounting-gl-models/src/main/java/com/firefly/core/accounting/models/entities/journal/v1/JournalBatch.java
-/Users/casanchez/Desktop/FIREFLY-OSS/core-common-accounting-gl/core-common-accounting-gl-models/src/main/java/com/firefly/core/accounting/models/entities/journal/v1/JournalEntry.java
-/Users/casanchez/Desktop/FIREFLY-OSS/core-common-accounting-gl/core-common-accounting-gl-models/src/main/java/com/firefly/core/accounting/models/entities/journal/v1/JournalLine.java
-/Users/casanchez/Desktop/FIREFLY-OSS/core-common-accounting-gl/core-common-accounting-gl-models/src/main/java/com/firefly/core/accounting/models/repositories/BaseRepository.java
-/Users/casanchez/Desktop/FIREFLY-OSS/core-common-accounting-gl/core-common-accounting-gl-models/src/main/java/com/firefly/core/accounting/models/repositories/account/v1/GlAccountRepository.java
-/Users/casanchez/Desktop/FIREFLY-OSS/core-common-accounting-gl/core-common-accounting-gl-models/src/main/java/com/firefly/core/accounting/models/repositories/journal/v1/JournalBatchRepository.java
-/Users/casanchez/Desktop/FIREFLY-OSS/core-common-accounting-gl/core-common-accounting-gl-models/src/main/java/com/firefly/core/accounting/models/repositories/journal/v1/JournalEntryRepository.java
-/Users/casanchez/Desktop/FIREFLY-OSS/core-common-accounting-gl/core-common-accounting-gl-models/src/main/java/com/firefly/core/accounting/models/repositories/journal/v1/JournalLineRepository.java
