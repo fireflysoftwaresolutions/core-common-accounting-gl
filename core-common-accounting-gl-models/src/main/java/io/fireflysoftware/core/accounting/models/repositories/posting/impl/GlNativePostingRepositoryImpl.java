@@ -127,7 +127,26 @@ public class GlNativePostingRepositoryImpl implements GlNativePostingRepository 
 
     @Override
     public Mono<GlNativeJournalAction> appendAction(GlNativeJournalAction row) {
-        return template.insert(row);
+        return Mono.defer(
+                () -> {
+                    var strategy = template.getDataAccessStrategy();
+                    var mapper = strategy.getStatementMapper();
+                    var insert = mapper.createInsert(strategy.getTableName(GlNativeJournalAction.class));
+                    for (var entry : strategy.getOutboundRow(row).entrySet()) {
+                        if (entry.getValue().hasValue())
+                            insert = insert.withColumn(entry.getKey(), entry.getValue());
+                    }
+                    // RETURNING evaluates the read policy before its own action row is visible.
+                    // This immutable assigned-key record has no entity lifecycle callbacks.
+                    var operation = mapper.getMappedObject(insert);
+                    return template.getDatabaseClient().sql(operation).fetch().rowsUpdated()
+                            .filter(count -> count == 1)
+                            .switchIfEmpty(Mono.error(new DataIntegrityViolationException(
+                                    "Exactly one native action insertion required")))
+                            .then(Mono.defer(() -> findAction(row.tenantId(), row.bookId(), row.actionId())))
+                            .switchIfEmpty(Mono.error(new DataIntegrityViolationException(
+                                    "Protected inserted native action required")));
+                });
     }
 
     @Override

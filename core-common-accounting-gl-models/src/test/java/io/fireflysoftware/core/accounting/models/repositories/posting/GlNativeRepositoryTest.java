@@ -208,7 +208,9 @@ public class GlNativeRepositoryTest {
                         "GL_POSTING_REQUEST_V1",
                         "{}",
                         java.time.Instant.parse("2026-10-26T12:34:56.123Z"));
-        call(repository(d), "appendAction", new Class[] {GlNativeJournalAction.class}, row).block();
+        // This networkless driver has no retained rows for the required protected readback.
+        assertThrows(org.springframework.dao.DataIntegrityViolationException.class,
+                () -> call(repository(d), "appendAction", new Class[] {GlNativeJournalAction.class}, row).block());
         var sql = d.sql.getFirst();
         assertTrue(sql.contains("request_shape"));
         assertTrue(sql.contains("original_request"));

@@ -36,9 +36,13 @@ import reactor.core.publisher.Mono;
 
 import java.time.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public final class GlPostingApplicationServiceImpl implements GlPostingApplicationService {
+    private static final Logger LOG=LoggerFactory.getLogger(GlPostingApplicationServiceImpl.class);
     private final GlAccountingAuthority authority;
     private final ObjectProvider<GlNativePostingRepository> repositories;
     private final ObjectProvider<GlAccountingTransaction> transactions;
@@ -108,20 +112,22 @@ public final class GlPostingApplicationServiceImpl implements GlPostingApplicati
                         validated.intentDigest(),
                         validated.canonicalIntent(),
                         Map.of("actionId", validated.request().actionId()));
+        var stage=new AtomicReference<>("AUTHORITY");
         return authority
                 .authorizeAccounts(intent, accounts(validated), true)
                 .flatMap(
                         admission ->
-                                source.observe(admission, validated)
+                                Mono.defer(()->{stage.set("LEDGER_SOURCE");return source.observe(admission, validated);})
                                         .switchIfEmpty(Mono.error(unavailable()))
                                         .timeout(Duration.ofSeconds(4))
                                         .flatMap(
                                                 observation -> {
                                                     source(admission, validated, observation);
+                                                    stage.set("CURRENCY_OBSERVATION");
                                                     return observations(validated, currency)
                                                             .flatMap(
-                                                                    observed ->
-                                                                            commitNew(
+                                                                    observed -> {
+                                                                            stage.set("NATIVE_COMMIT");return commitNew(
                                                                                     tenant,
                                                                                     book,
                                                                                     decoded,
@@ -129,8 +135,8 @@ public final class GlPostingApplicationServiceImpl implements GlPostingApplicati
                                                                                     observation,
                                                                                     observed,
                                                                                     repository,
-                                                                                    transaction));
-                                                }));
+                                                                                    transaction);});
+                                                })).doOnError(error->LOG.warn("GL posting attempt failed: stage={} exception={}",stage.get(),error.getClass().getName()));
     }
 
     private Mono<GlPostingReceipt> commitNew(

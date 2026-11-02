@@ -12,6 +12,9 @@ import io.fireflysoftware.core.banking.ledger.sdk.invoker.ApiClient;
 import java.time.*;
 import java.util.*;
 import java.util.function.LongSupplier;
+import java.util.concurrent.atomic.AtomicReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.fireflyframework.core.transaction.R2dbcOperationBudget;
 import org.fireflyframework.security.api.domain.*;
 import org.fireflyframework.security.spi.*;
@@ -26,6 +29,7 @@ import reactor.core.publisher.Mono;
 
 /** Observes the genuine typed owner receipt using issuer-granted resources, after Core four-eyes approval. */
 public final class SdkLedgerPostingSourcePortImpl implements AccountingPostingSourcePort {
+    private static final Logger LOG=LoggerFactory.getLogger(SdkLedgerPostingSourcePortImpl.class);
     private final GlApprovedLedgerMappingPort mappings;
     private final SecurityContextPort security;
     private final PolicyEvaluationPort policies;
@@ -50,6 +54,8 @@ public final class SdkLedgerPostingSourcePortImpl implements AccountingPostingSo
     }
 
     @Override public Mono<GlPostingSourceObservation> observe(GlAccountingAuthority.Admission admission, GlPostingRules.Validated posting) {
+        return Mono.defer(() -> {
+        var stage=new AtomicReference<>(Stage.ADMISSION);
         return GlAccountingBoundary.outsideTransaction(() -> Mono.defer(() -> {
             Objects.requireNonNull(admission);Objects.requireNonNull(posting);admission.requireCurrent();
             String tenant=admission.intent().tenantId(),book=admission.intent().bookId();
@@ -66,23 +72,25 @@ public final class SdkLedgerPostingSourcePortImpl implements AccountingPostingSo
             var originalUntil=Instant.ofEpochMilli(Math.min(admission.validUntilEpochMillis(),started.plusSeconds(5).toEpochMilli()));
             var budget=R2dbcOperationBudget.observed(started,originalUntil,
                     before,Duration.ofSeconds(5),clock,nanos);
-            return current(admission,budget).then(mappings.current(admission,posting)).flatMap(mapping -> {
+            return current(admission,budget).then(Mono.defer(()->{stage.set(Stage.MAPPING_INITIAL);return mappings.current(admission,posting);})).flatMap(mapping -> {
                 budget.remaining();GlLedgerMappingSnapshotRules.matches(tenant,book,mapping.snapshot(),posting);
                 if (!mapping.approvalId().toString().equals(admission.approval().approvalReference())
                         || !mapping.approvalProofDigest().equals(admission.approval().approvalDigest()) || mapping.validUntilEpochMillis()<=clock.millis()) throw denied();
                 var snapshot=mapping.snapshot().snapshot();var accounts=Set.of(snapshot.source().ledger().accountId(),snapshot.destination().ledger().accountId());
-                return authorize(admission,posting,mapping,budget).flatMap(initial -> credential(profile,accounts,budget).flatMap(credential -> {
+                stage.set(Stage.POLICY_INITIAL);
+                return authorize(admission,posting,mapping,budget).flatMap(initial -> Mono.defer(()->{stage.set(Stage.OBSERVER_CREDENTIAL);return credential(profile,accounts,budget);}).flatMap(credential -> {
                     var until=earliest(originalUntil,earliest(Instant.ofEpochMilli(mapping.validUntilEpochMillis()),credential.until()));
                     var outgoing=budget.intersect(R2dbcOperationBudget.observed(started,until,before,Duration.ofSeconds(5),clock,nanos));
                     var apiClient=new ApiClient(transport.mutate().codecs(codecs->codecs.defaultCodecs().maxInMemorySize(1024*1024)).build())
                             .setBasePath(profile.baseUri().toString().replaceAll("/$",""));
                     apiClient.addDefaultHeader(HttpHeaders.AUTHORIZATION,"Bearer "+credential.value());
+                    stage.set(Stage.LEDGER_HTTP);
                     return new LedgerFundsApi(apiClient).getFundsMonetaryReceipts(tenant,selected.reservationId(),null)
-                        .switchIfEmpty(Mono.error(unavailable())).timeout(outgoing.remaining()).map(value -> verify(selected,posting,mapping,value))
-                        .flatMap(ignored -> mappings.current(admission,posting).filter(again->again.approvalId().equals(mapping.approvalId())
+                        .switchIfEmpty(Mono.error(unavailable())).timeout(outgoing.remaining()).map(value -> {stage.set(Stage.RECEIPT_VALIDATION);return verify(selected,posting,mapping,value);})
+                        .flatMap(ignored -> Mono.defer(()->{stage.set(Stage.MAPPING_CURRENT);return mappings.current(admission,posting);}).filter(again->again.approvalId().equals(mapping.approvalId())
                                 &&again.snapshotId().equals(mapping.snapshotId())&&again.snapshot().snapshotSha256().equals(mapping.snapshot().snapshotSha256())
                                 &&again.approvalProofDigest().equals(mapping.approvalProofDigest())&&again.validUntilEpochMillis()>clock.millis())
-                            .switchIfEmpty(Mono.error(denied())).flatMap(again->current(admission,outgoing).then(authorize(admission,posting,mapping,outgoing))
+                            .switchIfEmpty(Mono.error(denied())).flatMap(again->Mono.defer(()->{stage.set(Stage.POLICY_CURRENT);return current(admission,outgoing).then(authorize(admission,posting,mapping,outgoing));})
                             .filter(value->value.policyRevision().equals(initial.policyRevision())).switchIfEmpty(Mono.error(denied()))
                             .then(Mono.fromSupplier(() -> {
                                 outgoing.remaining();admission.requireCurrent();
@@ -91,7 +99,8 @@ public final class SdkLedgerPostingSourcePortImpl implements AccountingPostingSo
                             }))));
                 }));
             }).timeout(budget.remaining());
-        })).onErrorMap(error->error instanceof ResponseStatusException?error:unavailable());
+        })).onErrorMap(error->mapFailure(stage.get(),error));
+        });
     }
 
     private Mono<PolicyEvaluationProvenance> authorize(GlAccountingAuthority.Admission admission,GlPostingRules.Validated posting,
@@ -157,6 +166,21 @@ public final class SdkLedgerPostingSourcePortImpl implements AccountingPostingSo
     private static EnrollmentSnapshot snapshot(io.fireflysoftware.core.banking.ledger.sdk.model.EnrollmentSnapshot value){Objects.requireNonNull(value);var kind=switch(Objects.requireNonNull(value.getKind())){case CUSTOMER->FundsContracts.Kind.CUSTOMER;case BANK_CONTROL->FundsContracts.Kind.BANK_CONTROL;};return new EnrollmentSnapshot(value.getAccountId(),value.getEnrollmentId(),value.getContractId(),value.getCurrency(),value.getCurrencyScale(),value.getCurrencyPolicy(),kind);}
     private static BalanceVector balances(io.fireflysoftware.core.banking.ledger.sdk.model.BalanceVector value){Objects.requireNonNull(value);return new BalanceVector(value.getBookedBefore(),value.getHeldBefore(),value.getBookedAfter(),value.getHeldAfter());}
     private static MonetaryReceiptEnvelope monetary(io.fireflysoftware.core.banking.ledger.sdk.model.MonetaryReceiptEnvelope value){Objects.requireNonNull(value);var r=Objects.requireNonNull(value.getValue());var e=Objects.requireNonNull(r.getEffect());var actor=Objects.requireNonNull(r.getActor());var kind=switch(Objects.requireNonNull(r.getEffectKind())){case COMMIT->EffectKind.COMMIT;case REVERSE->EffectKind.REVERSE;};var effect=new MoneyEffect(e.getAmount(),e.getCurrency(),snapshot(e.getSource()),snapshot(e.getDestination()),e.getSourceMinorUnits(),e.getDestinationMinorUnits(),e.getFromAccountId(),e.getToAccountId(),balances(e.getSourceBalances()),balances(e.getDestinationBalances()));var receipt=new MonetaryReceipt(r.getReceiptId(),r.getEventId(),r.getTenant(),r.getReservationId(),r.getOperationId(),kind,r.getActionId(),accepted(r.getAcceptedReserve()),r.getPostingId(),r.getOriginalCommitReceiptId(),r.getOriginalPostingId(),r.getEffectRecordedAtEpochMillis(),effect,new Actor(actor.getIssuer(),actor.getSubject()));var envelope=new MonetaryReceiptEnvelope(receipt,canonical(value.getCanonical()));FundsReceiptCodec.verify(envelope);return envelope;}
+    enum Stage { ADMISSION, MAPPING_INITIAL, POLICY_INITIAL, OBSERVER_CREDENTIAL, LEDGER_HTTP, RECEIPT_VALIDATION, MAPPING_CURRENT, POLICY_CURRENT }
+    static Throwable mapFailure(Stage stage,Throwable error) {
+        LOG.warn("Ledger source observation failed: {}",failureDescription(stage,error));
+        return error instanceof ResponseStatusException?error:unavailable();
+    }
+    static String failureDescription(Stage stage,Throwable error) {
+        String category=error instanceof org.springframework.security.oauth2.core.OAuth2AuthorizationException?"OAUTH_REFUSED":
+                error instanceof org.springframework.security.oauth2.jwt.JwtException?"JWT_REFUSED":
+                error instanceof org.springframework.web.reactive.function.client.WebClientResponseException?"HTTP_REFUSED":
+                error instanceof java.util.concurrent.TimeoutException?"TIMEOUT":
+                error instanceof ResponseStatusException?"OWNER_REFUSED":"LOCAL_FAILURE";
+        int status=error instanceof org.springframework.web.reactive.function.client.WebClientResponseException response?response.getStatusCode().value():
+                error instanceof ResponseStatusException response?response.getStatusCode().value():0;
+        return "stage="+stage.name()+" category="+category+" exception="+error.getClass().getName()+" status="+status;
+    }
     private static Instant earliest(Instant a,Instant b){return a.isBefore(b)?a:b;}
     private record Credential(String value,Instant until){@Override public String toString(){return "Credential[redacted]";}}
     private static ResponseStatusException denied(){return new ResponseStatusException(HttpStatus.FORBIDDEN,"Current exact Ledger source and full approved mapping required");}
