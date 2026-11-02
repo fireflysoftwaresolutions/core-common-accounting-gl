@@ -27,4 +27,4 @@ public record GlPostingReceipt(
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED) long journalSequence,
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED) String intentDigest,
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED) boolean recovered,
-        @Schema(requiredMode = Schema.RequiredMode.REQUIRED) java.time.Instant recordedAt) {}
+        @Schema(ref = "#/components/schemas/FireflyInstant", requiredMode = Schema.RequiredMode.REQUIRED) java.time.Instant recordedAt) {}

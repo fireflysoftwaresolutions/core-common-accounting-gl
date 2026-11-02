@@ -137,6 +137,9 @@
                             <apiPackage>io.fireflysoftware.core.accounting.sdk.api</apiPackage>
                             <modelPackage>io.fireflysoftware.core.accounting.sdk.model</modelPackage>
                             <invokerPackage>io.fireflysoftware.core.accounting.invoker</invokerPackage>
+                            <schemaMappings>
+                                <schemaMapping>FireflyInstant=java.time.Instant</schemaMapping>
+                            </schemaMappings>
                             <configOptions>
                                 <java20>true</java20>
                                 <useTags>true</useTags>

@@ -1685,8 +1685,7 @@ components:
         recovered:
           type: boolean
         recordedAt:
-          type: string
-          format: date-time
+          $ref: "#/components/schemas/FireflyInstant"
       additionalProperties: false
     GlPostingErrorResponse:
       required:
@@ -2086,6 +2085,9 @@ components:
           format: int32
       description: Represents a paginated response containing a list of items and
         pagination metadata.
+    FireflyInstant:
+      type: string
+      format: date-time
   securitySchemes:
     glBearer:
       type: http

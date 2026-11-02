@@ -49,6 +49,9 @@ firefly:
       acquire-timeout: 5s
       initialization-timeout: 15s
       shutdown-timeout: 5s
+  openapi:
+    instant-scalar:
+      enabled: true
   security:
     resource-server:
       strict-policy: true

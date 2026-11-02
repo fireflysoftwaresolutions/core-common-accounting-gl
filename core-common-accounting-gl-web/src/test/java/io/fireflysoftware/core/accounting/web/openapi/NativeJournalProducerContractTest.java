@@ -83,6 +83,9 @@ class NativeJournalProducerContractTest {
                     .path("application/json").path("schema"));
             var required = new HashSet<String>(); receipt.path("required").forEach(value -> required.add(value.asText()));
             assertThat(required).contains("receiptId", "actionId", "postingId", "journalSequence", "intentDigest", "recovered", "recordedAt");
+            assertThat(receipt.path("properties").path("recordedAt").path("$ref").asText()).isEqualTo("#/components/schemas/FireflyInstant");
+            assertThat(document.path("components").path("schemas").path("FireflyInstant").path("type").asText()).isEqualTo("string");
+            assertThat(document.path("components").path("schemas").path("FireflyInstant").path("format").asText()).isEqualTo("date-time");
             var error = resolve(document, operation.path("responses").path("503").path("content")
                     .path("application/json").path("schema"));
             assertThat(error.path("properties").has("status")).isTrue();
